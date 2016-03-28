@@ -119,8 +119,8 @@ def build_with_docker(build_dir_mesos, build_dir_packaging, packages_dir):
                     MesosConfig.operating_system(),
                     str( build_end_time - build_start_time ),
                     packages_dir ))
-        Utils.run_proc("rm -rf {}".format(build_dir_mesos))
-        Utils.run_proc("rm -rf {}".format(build_dir_packaging))
+        Utils.cmd("rm -rf {}".format(build_dir_mesos))
+        Utils.cmd("rm -rf {}".format(build_dir_packaging))
     else:
         LOG.error( "Mesos build failed. Leaving temp directory {} for inspection.".format( build_dir_mesos ) )
         Utils.cmd("rm -rf {}".format(build_dir_packaging))
@@ -200,6 +200,8 @@ def op_build():
         packages_dir        = "{}/{}-{}".format( MesosConfig.packages_dir(),
                                        MesosConfig.mesos_version(),
                                        MesosConfig.operating_system().replace(":", "-") )
+
+        Config.set_cmd_log("{}.{}.log".format(build_dir_mesos, str(int(time.time()))))
 
         if os.path.exists(packages_dir):
             if not Utils.confirm("Mesos build for {} {} already exists. To rebuild, continue.".format(
