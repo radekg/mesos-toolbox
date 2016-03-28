@@ -17,10 +17,18 @@ class Utils(object):
 
     @staticmethod
     def cmd(command):
+        from config import Config
+        log     = None if Config.cmd_log() == None else open(Config.cmd_log(), 'a')
+        output  = list()
         process = Popen(args=command, stdout=PIPE, stderr=PIPE, shell=True)
-        # TODO: implement forwarding stdout / stderr to a build specific log file
+        for line in process.stdout:
+            if log != None:
+                log.write(line)
+                log.flush()
+            output.append(line)
         process.wait()
-        return { 'ExitCode': process.returncode, 'StdOut': process.stdout.read(), 'StdErr': process.stderr.read() }
+        if log != None: log.close()
+        return { 'ExitCode': process.returncode, 'StdOut': "".join(output), 'StdErr': process.stderr.read() }
 
     @staticmethod
     def exit_with_cmd_error(file, error):

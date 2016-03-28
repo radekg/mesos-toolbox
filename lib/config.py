@@ -13,6 +13,7 @@ class Config(object):
     def __init__(self):
         self._arguments = []
         self._ready = False
+        self._cmd_log = None
         logging.basicConfig()
 
     def __ready__(self):
@@ -65,3 +66,15 @@ class Config(object):
     @staticmethod
     def print_help():
         Config().argparse.print_help()
+
+    ##
+    ## BUILD LOG:
+    ##
+
+    @staticmethod
+    def set_cmd_log(path):
+        Config()._cmd_log = path
+
+    @staticmethod
+    def cmd_log():
+        return Config()._cmd_log
