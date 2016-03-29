@@ -13,10 +13,11 @@ This program uses Docker via command line and it works perfectly fine with Docke
 
 ## * Supported target operating systems
 
+- `Debian Jessie`
 - `Ubuntu Precise`
 - `Ubuntu Trusty`
 
-*More to come soon...*
+**More to come soon...**
 
 ## Commands
 
