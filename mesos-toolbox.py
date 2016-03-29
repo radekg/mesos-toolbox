@@ -87,15 +87,17 @@ def build_with_docker(build_dir_mesos, build_dir_packaging, packages_dir):
     image_name = "mesos-docker-build-{}".format(MesosConfig.operating_system().replace(":","-"))
     # Do we have the Docker image?
     LOG.info("Checking for Docker image...")
-    result = Utils.cmd("docker images | grep {}".format(image_name))
+    result = Utils.cmd("docker images") # Simply make sure we have docker operational
     if result['ExitCode'] != 0:
         Utils.print_result_error(LOG, "Not able to list Docker images. Is Docker installed and running?", result)
         exit(105)
+    # repeat, grep returns 1 if text not found
+    result = Utils.cmd("docker images | grep {}".format(image_name))
     if result['StdOut'] == "":
         LOG.info("Docker image not found. Building...")
         result = Utils.cmd( "cd {}/{} && docker build --no-cache --force-rm=true -t {} .".format(
                             MesosConfig.docker_templates_dir(),
-                            MesosConfig.args().operating_system.replace(":", "\\:"),
+                            MesosConfig.operating_system().replace(":", "\\:"),
                             image_name ) )
         if result['ExitCode'] != 0:
             Utils.print_result_error(LOG, "Docker image creation failed. Is Docker installed and running?", result)
@@ -105,6 +107,7 @@ def build_with_docker(build_dir_mesos, build_dir_packaging, packages_dir):
                                   build_dir_mesos,
                                   image_name,
                                   MesosConfig.mesos_build_version() )
+    Utils.cmd("echo '{}'".format(mesos_build_command))
     LOG.info("Building Mesos {} for {}. This will take a while...".format(MesosConfig.mesos_version(), MesosConfig.operating_system()))
     build_start_time = int(time.time())
     build_status = Utils.cmd(mesos_build_command)
@@ -123,7 +126,6 @@ def build_with_docker(build_dir_mesos, build_dir_packaging, packages_dir):
         Utils.cmd("rm -rf {}".format(build_dir_packaging))
     else:
         LOG.error( "Mesos build failed. Leaving temp directory {} for inspection.".format( build_dir_mesos ) )
-        Utils.cmd("rm -rf {}".format(build_dir_packaging))
         exit(107)
 
 def build_with_osx(build_dir_mesos, build_dir_packaging, packages_dir):
@@ -201,7 +203,9 @@ def op_build():
                                        MesosConfig.mesos_version(),
                                        MesosConfig.operating_system().replace(":", "-") )
 
-        Config.set_cmd_log("{}.{}.log".format(build_dir_mesos, str(int(time.time()))))
+        build_log_file      = "{}.{}.log".format(build_dir_mesos, str(int(time.time())))
+        LOG.info("Recording build process to {}.".format(build_log_file))
+        Config.set_cmd_log(build_log_file)
 
         if os.path.exists(packages_dir):
             if not Utils.confirm("Mesos build for {} {} already exists. To rebuild, continue.".format(
