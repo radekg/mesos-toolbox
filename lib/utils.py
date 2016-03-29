@@ -18,13 +18,12 @@ class Utils(object):
     @staticmethod
     def cmd(command):
         from config import Config
-        log     = None if Config.cmd_log() == None else open(Config.cmd_log(), 'a')
+        log     = None if Config.cmd_log() == None else open(Config.cmd_log(), 'a', 0)
         output  = list()
         process = Popen(args=command, stdout=PIPE, stderr=PIPE, shell=True)
         for line in process.stdout:
             if log != None:
                 log.write(line)
-                log.flush()
             output.append(line)
         process.wait()
         if log != None: log.close()
