@@ -13,6 +13,7 @@ This program uses Docker via command line and it works perfectly fine with Docke
 
 ## * Supported target operating systems
 
+- `Centos 7.1`
 - `Debian Jessie`
 - `Ubuntu Precise`
 - `Ubuntu Trusty`
