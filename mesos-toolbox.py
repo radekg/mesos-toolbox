@@ -214,6 +214,7 @@ def op_build():
                 exit(0)
 
         # cleanup old data:
+        Utils.cmd("rm -rf {}".format(packages_dir))
         Utils.cmd("rm -rf {}".format(build_dir_mesos))
         Utils.cmd("rm -rf {}".format(build_dir_packaging))
 
