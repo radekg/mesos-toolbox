@@ -15,6 +15,7 @@ This program uses Docker via command line and it works perfectly fine with Docke
 
 - `Centos 7.1`
 - `Debian Jessie`
+- `Fedora 21`
 - `Fedora 22`
 - `Fedora 23`
 - `Ubuntu Precise`
