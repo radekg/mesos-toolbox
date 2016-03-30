@@ -9,7 +9,10 @@ RUN dnf install -y which tar wget \
     && ln -sf /usr/local/apache-maven/bin/mvn /usr/bin/mvn \
     && dnf groupinstall "Development Tools" "Development Libraries" -y \
     && dnf update nss -y \
-    && dnf install -y python-boto libtool redhat-rpm-config gcc-c++ java-1.8.0-openjdk-devel cyrus-sasl-md5 apr-devel subversion-devel ruby-devel \
+    && dnf install -y python-boto libtool redhat-rpm-config gcc-c++ \
+                      java-1.8.0-openjdk-devel cyrus-sasl-md5 \
+                      apr-devel subversion-devel ruby-devel \
+                      rpm-build \
     && gem install fpm --no-ri --no-rdoc
 
 ENV M2_HOME /usr/local/apache-maven
