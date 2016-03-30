@@ -55,3 +55,18 @@ class Utils(object):
     @staticmethod
     def platform():
         return sys.platform
+
+    @staticmethod
+    def parse_git_config(lines):
+        response = dict()
+        last_section = None
+        for line in lines:
+            line = line.strip()
+            if line.startswith("[") and line.endswith("]"):
+                last_section = line[1:-1]
+                response[ last_section ] = dict()
+            else:
+                if last_section != None:
+                    prop, value = line.split(" = ")
+                    response[ last_section ][ prop.strip() ] = value.strip()
+        return response
