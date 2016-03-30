@@ -215,13 +215,37 @@ def op_build():
         packages_dir        = "{}/{}-{}".format( MesosConfig.packages_dir(),
                                         MesosConfig.mesos_version(),
                                         MesosConfig.operating_system().replace(":", "-") )
-        patch_file = "{}/{}-{}-{}.patch".format(
-                                        MesosConfig.packages_patches_dir(),
-                                        MesosConfig.deb_packaging_sha(),
-                                        MesosConfig.mesos_version(),
-                                        MesosConfig.operating_system().replace(":", "-") )
 
-        build_log_file      = "{}.{}.log".format(build_dir_mesos, str(int(time.time())))
+        ## LOOKUP order:
+        #   - <sha>-<mesos-version>-<os-family>-<os-version>
+        #   - <sha>-<mesos-version>-<os-family>
+        #   - <sha>-<os-family>-<os-version>
+        #   - <sha>-<os-family>
+        #   - <sha>
+        patch_files = [
+            "{}/{}-{}-{}.patch".format(
+                                MesosConfig.packages_patches_dir(),
+                                MesosConfig.deb_packaging_sha(),
+                                MesosConfig.mesos_version(),
+                                MesosConfig.operating_system().replace(":", "-") ),
+            "{}/{}-{}-{}.patch".format(
+                                MesosConfig.packages_patches_dir(),
+                                MesosConfig.deb_packaging_sha(),
+                                MesosConfig.mesos_version(),
+                                MesosConfig.operating_system().split(":")[0] ),
+            "{}/{}-{}.patch".format(
+                                MesosConfig.packages_patches_dir(),
+                                MesosConfig.deb_packaging_sha(),
+                                MesosConfig.operating_system().replace(":", "-") ),
+            "{}/{}-{}.patch".format(
+                                MesosConfig.packages_patches_dir(),
+                                MesosConfig.deb_packaging_sha(),
+                                MesosConfig.operating_system().split(":")[0] ),
+            "{}/{}.patch".format(
+                                MesosConfig.packages_patches_dir(),
+                                MesosConfig.deb_packaging_sha() ) ]
+
+        build_log_file = "{}.{}.log".format(build_dir_mesos, str(int(time.time())))
         LOG.info("Recording build process to {}.".format(build_log_file))
         Config.set_cmd_log(build_log_file)
 
@@ -241,14 +265,17 @@ def op_build():
         Utils.cmd("cp -R {} {}".format( MesosConfig.mesos_repository_dir(), build_dir_mesos ))
         Utils.cmd("cp -R {} {}".format( MesosConfig.deb_packaging_repository_dir(), build_dir_packaging ))
 
-        print patch_file
-        if os.path.isfile(patch_file):
-            LOG.info("Found a patch for mesos-deb-packaging {}. Applying...".format( MesosConfig.deb_packaging_sha() ))
-            result = Utils.cmd("cd {} && git apply {}".format(build_dir_packaging, patch_file))
+        patch_file_to_use = None
+        for patch_file in patch_files:
+            if os.path.isfile(patch_file):
+                patch_file_to_use = patch_file
+                break
+
+        if patch_file_to_use != None:
+            LOG.info("Found a patch file {} for mesos-deb-packaging. Applying...".format( patch_file_to_use ))
+            result = Utils.cmd("cd {} && git apply {}".format(build_dir_packaging, patch_file_to_use))
             if result['ExitCode'] != 0:
-                Utils.print_result_error(LOG, "Patch {} could not be applied to {}.".format(
-                                                patch_file,
-                                                build_dir_packaging ), result)
+                Utils.print_result_error(LOG, "Patch could not be applied to {}.".format( build_dir_packaging ), result)
                 exit(105)
             else:
                 LOG.info("Patch applied.")
