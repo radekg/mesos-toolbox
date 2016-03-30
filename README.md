@@ -106,6 +106,33 @@ To build for the system shown above, the following command can be used:
 
     $> mesos-toolbox.py build --mesos-version master --os alpine:3.1
 
+## The build failed, what do I do
+
+OK, so the build has failed with the error message similar to this:
+  
+    $> mesos-toolbox.py build --mesos-version 0.27.2 --os fedora:23
+    ...
+    INFO:mesos-toolbox.py:Recording build process to /Users/rad/.mesos/temp/0.27.2-fedora-23.1459293623.log.
+    ...
+    ERROR:mesos-toolbox.py:Mesos build failed. Leaving build log and temp directories for inspection. mesos=/Users/rad/.mesos/temp/0.27.2-fedora-23; packaging=/Users/rad/.mesos/temp/0.27.2-fedora-23-packaging
+
+The program has left the following artefacts on the drive:
+
+- `<work-dir>/0.27.2-fedora-23.1459293623.log`
+- `<work-dir>/0.27.2-fedora-23`
+- `<work-dir>/0.27.2-fedora-23-packaging`
+
+You can find the docker command used for the last build in the log file:
+
+    $> cat <work-dir>/.mesos/temp/0.27.2-fedora-23.1459293623.log | grep 'docker run'
+    docker run -ti -v /Users/rad/.mesos/temp/0.27.2-fedora-23-packaging:/mesos-deb-packaging -v /Users/rad/.mesos/temp/0.27.2-fedora-23:/mesos-src mesos-docker-build-fedora-23 /bin/bash -c cd /mesos-deb-packaging
+
+Copy everything until `-c`, paste in your terminal and run. In the container:
+
+    cd /mesos-deb-packaging && ./build_mesos --src-dir /mesos-src
+
+You are set for debugging.
+
 ## Configuration
 
 To be added.
