@@ -83,6 +83,14 @@ Remove a local build.
     Are you sure you want to proceed? (y or yes to continue): y
     $> 
 
+### show-mesos-sources
+
+List git origins with Mesos sources.
+
+### show-packaging-sources
+
+List git origins with `mesos-deb-packaging` sources.
+
 ## Docker images
 
 The toolbox comes with a bunch of Docker files for the Mesos build process. There is one Docker file per operating system. These files can be found in the `docker` folder.  

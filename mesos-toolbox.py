@@ -162,12 +162,25 @@ def op_remove_build():
                                         MesosConfig.operating_system().replace(":", "-")))
 
 def op_show_mesos_sources():
-    # TODO: implement
-    return False
+    show_sources('mesos')
 
 def op_show_packaging_sources():
-    # TODO: implement
-    return False
+    show_sources('mesos-packaging')
+
+def show_sources(kind):
+    path = "{}/{}/".format(MesosConfig.source_dir(), kind)
+    for name in os.listdir(path):
+        full_path  = os.path.join(path, name)
+        git_config = "{}/.git/config".format(full_path)
+        if os.path.isfile(git_config):
+            file = open(git_config, 'r')
+            data = Utils.parse_git_config( file.readlines() )
+            file.close()
+            if 'remote "origin"' in data:
+                if 'url' in data['remote "origin"']:
+                    print "{} in directory {}".format(
+                        data['remote "origin"']['url'],
+                        full_path )
 
 def op_remove_mesos_sources():
     # TODO: implement
