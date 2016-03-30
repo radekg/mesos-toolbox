@@ -1,14 +1,15 @@
 FROM fedora:23
 
-RUN dnf install -y which tar wget \
+RUN dnf install -y which tar wget git-all \
     && mkdir -p /tmp/maven && cd /tmp/maven \
-    && wget http://mirror.olnevhost.net/pub/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz \
-    && tar xvf apache-maven-3.3.9-bin.tar.gz \
-    && mv apache-maven-3.3.9  /usr/local/apache-maven \
+    && wget http://mirror.olnevhost.net/pub/apache/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz \
+    && tar xvf apache-maven-3.3.3-bin.tar.gz \
+    && mv apache-maven-3.3.3 /usr/local/apache-maven \
     && cd / && source /etc/bashrc && rm -rf /tmp/maven \
     && ln -sf /usr/local/apache-maven/bin/mvn /usr/bin/mvn \
     && dnf groupinstall "Development Tools" "Development Libraries" -y \
-    && dnf install -y libtool redhat-rpm-config gcc-c++ java-1.8.0-openjdk-devel cyrus-sasl-md5 apr-devel subversion-devel ruby-devel \
+    && dnf update nss -y \
+    && dnf install -y python-boto libtool redhat-rpm-config gcc-c++ java-1.8.0-openjdk-devel cyrus-sasl-md5 apr-devel subversion-devel ruby-devel \
     && gem install fpm --no-ri --no-rdoc
 
 ENV M2_HOME /usr/local/apache-maven
