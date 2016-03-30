@@ -125,7 +125,7 @@ def build_with_docker(build_dir_mesos, build_dir_packaging, packages_dir):
         Utils.cmd("rm -rf {}".format(build_dir_mesos))
         Utils.cmd("rm -rf {}".format(build_dir_packaging))
     else:
-        LOG.error( "Mesos build failed. Leaving temp directory {} for inspection.".format( build_dir_mesos ) )
+        LOG.error( "Mesos build failed. Leaving build log and temp directories for inspection. mesos={}; packaging={}".format( build_dir_mesos, build_dir_packaging ) )
         exit(107)
 
 def build_with_osx(build_dir_mesos, build_dir_packaging, packages_dir):
