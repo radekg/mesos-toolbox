@@ -64,6 +64,13 @@ class MesosConfig(object):
                                 default=Utils.env_with_default("DOCKER_TEMPLATES_DIR", "{}/docker".format(
                                     os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
                                 )))
+        Config.add_argument( "--packaging-patches",
+                                dest="packages_patches_dir",
+                                help="mesos-deb-packaging patches directory.",
+                                metavar="PACKAGES_PATCHES_DIR",
+                                default=Utils.env_with_default("PACKAGES_PATCHES_DIR", "{}/patches/mesos-packaging".format(
+                                    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+                                )))
         Config.add_argument( "--source-dir",
                                 dest="source_dir",
                                 help="Directory in which the Mesos sources are stored.",
@@ -126,6 +133,11 @@ class MesosConfig(object):
     def docker_templates_dir():
         from lib.config import Config
         return Config.args().docker_templates_dir
+
+    @staticmethod
+    def packages_patches_dir():
+        from lib.config import Config
+        return Config.args().packages_patches_dir
 
     @staticmethod
     def source_dir():
