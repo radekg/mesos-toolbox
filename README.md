@@ -20,6 +20,7 @@ This program uses Docker via command line and it works perfectly fine with Docke
 - `Fedora 23`
 - `Ubuntu Precise`
 - `Ubuntu Trusty`
+- `Ubuntu Xenial`
 
 **More to come soon...**
 
