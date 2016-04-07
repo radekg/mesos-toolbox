@@ -119,6 +119,11 @@ def op_remove_sources():
         exit(0)
     Utils.cmd("rm -rf {}".format( MarathonConfig.marathon_repository_dir() ))
 
+def op_check_this_system():
+    LOG.info("Checking dependencies:")
+    LOG.info(" -> Docker? : {}".format( "Yes" if Utils.is_docker_available() else "No" ))
+    LOG.info(" -> Git?    : {}".format( "Yes" if Utils.is_git_available() else "No" ))
+
 if __name__ == "__main__":
 
     if "build" == MarathonConfig.command(): op_build()
@@ -127,4 +132,5 @@ if __name__ == "__main__":
     if "remove-build" == MarathonConfig.command(): op_remove_build()
     if "show-sources" == MarathonConfig.command(): Utils.list_sources(MarathonConfig.source_dir(), 'marathon')
     if "remove-sources" == MarathonConfig.command(): op_remove_sources()
+    if "check-this-system" == MarathonConfig.command(): op_check_this_system()
     

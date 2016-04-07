@@ -130,10 +130,18 @@ def op_remove_packaging_sources():
     Utils.cmd("rm -rf {}".format( MesosConfig.deb_packaging_repository_dir() ))
 
 def op_check_this_system():
-    # TODO: implement
-    # Check for Docker
-    # Check if all build dependencies are available (OSX only)
-    return False
+    LOG.info("Checking dependencies:")
+    LOG.info(" -> Docker?             : {}".format( "Yes" if Utils.is_docker_available() else "No" ))
+    LOG.info(" -> Git?                : {}".format( "Yes" if Utils.is_git_available() else "No" ))
+    if Utils.platform() == "darwin":
+        LOG.info(" -> Command line tools? : {}".format( "Yes" if Utils.is_xcode_available() else "No" ))
+        LOG.info(" -> Java 8?             : {}".format( "Yes" if Utils.is_java_available() else "No" ))
+        LOG.info(" -> Maven?              : {}".format( "Yes" if Utils.is_git_available() else "No" ))
+        LOG.info(" -> Subversion 1.9.x?   : {}".format( "Yes" if Utils.is_svn_available() else "No" ))
+        LOG.info(" -> autoconf?           : {}".format( "Yes" if Utils.is_autoconf_available() else "No" ))
+        LOG.info(" -> automake?           : {}".format( "Yes" if Utils.is_automake_available() else "No" ))
+        LOG.info(" -> libtool?            : {}".format( "Yes" if Utils.is_libtool_available() else "No" ))
+        LOG.info(" -> apr?                : {}".format( "Yes" if Utils.is_apr_available() else "No" ))
 
 def op_docker_image():
     # TODO: implement

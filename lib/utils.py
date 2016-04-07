@@ -149,6 +149,74 @@ class Utils(object):
             exit(202)
 
     ##
+    ## DEPENDENCY CHECKS:
+    ##
+
+    @staticmethod
+    def is_docker_available():
+        # Simply make sure we have docker operational
+        # On OSX, when using docker machine, which docker will actually return a path
+        # even if docker env is not sourced
+        result = Utils.cmd("docker images >/dev/null")
+        return result['ExitCode'] == 0
+
+    @staticmethod
+    def is_git_available():
+        result = Utils.cmd("which git")
+        return result['ExitCode'] == 0
+
+    @staticmethod
+    def is_brew_available():
+        result = Utils.cmd("which brew")
+        return result['ExitCode'] == 0
+
+    @staticmethod
+    def is_autoconf_available():
+        result = Utils.cmd("which autoconf")
+        return result['ExitCode'] == 0
+
+    @staticmethod
+    def is_automake_available():
+        result = Utils.cmd("which automake")
+        return result['ExitCode'] == 0
+
+    @staticmethod
+    def is_libtool_available():
+        result = Utils.cmd("which libtool")
+        return result['ExitCode'] == 0
+
+    @staticmethod
+    def is_xcode_available():
+        result = Utils.cmd("xcode-select -p")
+        return result['ExitCode'] == 0
+
+    @staticmethod
+    def is_apr_available():
+        if Utils.is_brew_available():
+            result = Utils.cmd("brew info apr")
+            return result['ExitCode'] == 0
+        else:
+            return False
+
+    @staticmethod
+    def is_svn_available():
+        result = Utils.cmd("which svn")
+        if result['ExitCode'] == 0:
+            result = Utils.cmd("svn --version | head -n 1 | awk '{print $3}'")
+            return result['StdOut'].startswith("1.9.")
+        else:
+            return False
+
+    @staticmethod
+    def is_java_available():
+        result = Utils.cmd("which java")
+        if result['ExitCode'] == 0:
+            result = Utils.cmd("java -version 2>&1 | head -n 1")
+            return "1.8." in result['StdOut']
+        else:
+            return False
+
+    ##
     ## DOCKER OPERATIONS:
     ##
 
@@ -161,8 +229,7 @@ class Utils(object):
 
     @staticmethod
     def exit_if_docker_unavailable(LOG):
-        result = Utils.cmd("docker images") # Simply make sure we have docker operational
-        if result['ExitCode'] != 0:
+        if not is_docker_available():
             Utils.print_result_error(LOG, "Not able to list Docker images. Is Docker installed and running?", result)
             exit(301)
 

@@ -24,7 +24,8 @@ class MarathonConfig(object):
                                 default="",
                                 choices=[ "build",
                                           "show-releases", "show-builds", "show-sources",
-                                          "remove-build","remove-sources" ] )
+                                          "remove-build","remove-sources",
+                                          "check-this-system" ] )
         Config.add_argument( "--marathon-version",
                                 dest="marathon_version",
                                 help="Marathon version to build.",
