@@ -61,7 +61,7 @@ class MesosConfig(object):
                                 dest="docker_templates_dir",
                                 help="Docker templates base directory.",
                                 metavar="DOCKER_TEMPLATES_DIR",
-                                default=Utils.env_with_default("DOCKER_TEMPLATES_DIR", "{}/docker".format(
+                                default=Utils.env_with_default("DOCKER_TEMPLATES_DIR", "{}/docker/mesos".format(
                                     os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
                                 )))
         Config.add_argument( "--packaging-patches",
@@ -75,17 +75,17 @@ class MesosConfig(object):
                                 dest="source_dir",
                                 help="Directory in which the Mesos sources are stored.",
                                 metavar="SOURCE_DIR",
-                                default=Utils.env_with_default("SOURCE_DIR", os.path.expanduser("~/.mesos/sources") ) )
+                                default=Utils.env_with_default("SOURCE_DIR", os.path.expanduser("~/.mesos-toolbox/mesos/sources") ) )
         Config.add_argument( "--packages-dir",
                                 dest="packages_dir",
                                 help="Directory in which packaged versions of Mesos are stored.",
                                 metavar="PACKAGES_DIR",
-                                default=Utils.env_with_default("PACKAGES_DIR", os.path.expanduser("~/.mesos/packages") ) )
+                                default=Utils.env_with_default("PACKAGES_DIR", os.path.expanduser("~/.mesos-toolbox/mesos/packages") ) )
         Config.add_argument( "--work-dir",
                                 dest="work_dir",
                                 help="Directory in which this program does the work.",
                                 metavar="WORK_DIR",
-                                default=Utils.env_with_default("WORK_DIR", os.path.expanduser("~/.mesos/temp") ) )
+                                default=Utils.env_with_default("WORK_DIR", os.path.expanduser("~/.mesos-toolbox/mesos/temp") ) )
 
         return Config.ready(program)
 
