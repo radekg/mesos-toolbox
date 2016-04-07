@@ -156,7 +156,7 @@ class Utils(object):
     def is_docker_image(LOG, image_name):
         Utils.exit_if_docker_unavailable(LOG)
         LOG.info("Checking for Docker image...")
-        result = Utils.cmd("docker images | grep {}".format(image_name))
+        result = Utils.cmd("docker images | grep -w {}".format(image_name))
         return result['StdOut'] != ""
 
     @staticmethod
