@@ -229,7 +229,7 @@ class Utils(object):
 
     @staticmethod
     def exit_if_docker_unavailable(LOG):
-        if not is_docker_available():
+        if not Utils.is_docker_available():
             Utils.print_result_error(LOG, "Not able to list Docker images. Is Docker installed and running?", result)
             exit(301)
 

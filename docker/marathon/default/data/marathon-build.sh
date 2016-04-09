@@ -1,12 +1,15 @@
 #!/bin/bash
 
+set -e
+
 BUILD_DIR=/marathon-src
 PACKAGING_DIR=/tmp/marathon-packaging
 ASSEMBLY_WITH_TESTS=${ASSEMBLY_WITH_TESTS-false}
+INCLUDE_HAPROXY_MARATHON_BRIDGE=${INCLUDE_HAPROXY_MARATHON_BRIDGE-true}
 
 echo "Creating build directory..."
 
-cd ${BUILD_DIR}
+pushd ${BUILD_DIR} >/dev/null
 
 if [ $ASSEMBLY_WITH_TESTS = true ]; then
   echo "[MARATHON BUILD]: Assembling Marathon ${BUILD_MARATHON_VERSION} with tests..."
@@ -23,6 +26,15 @@ mkdir -p ${PACKAGING_DIR}${INSTALL_DIRECTORY}/target
 echo "[MARATHON BUILD]: Copying output..."
 cp -R bin ${PACKAGING_DIR}${INSTALL_DIRECTORY}
 cp -R target/scala-2* ${PACKAGING_DIR}${INSTALL_DIRECTORY}/target
+
+if [ $INCLUDE_HAPROXY_MARATHON_BRIDGE = true ]; then
+  echo "Including haproxy-marathon-bridge in this build..."
+  cp examples/haproxy-marathon-bridge ${PACKAGING_DIR}${INSTALL_DIRECTORY}/bin/
+  chmod +x ${PACKAGING_DIR}${INSTALL_DIRECTORY}/bin/haproxy-marathon-bridge
+fi
+
+popd >/dev/null
+
 # We do not package anything except marathon iteself.
 # Any service or config needs to be provided after installation.
 
