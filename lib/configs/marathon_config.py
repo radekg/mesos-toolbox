@@ -72,6 +72,10 @@ class MarathonConfig(object):
                                 dest="with_tests",
                                 help="Run unit tests when building Marathon.",
                                 action="store_true" )
+        Config.add_argument( "--no-haproxy-marathon-bridge",
+                                dest="no_haproxy_marathon_bridge",
+                                help="Do not package haproxy-marathon-bridge when packaging Marathon.",
+                                action="store_false" )
 
         return Config.ready(program)
 
@@ -129,6 +133,11 @@ class MarathonConfig(object):
     def with_tests():
         from lib.config import Config
         return "true" if Config.args().with_tests == True else "false"
+
+    @staticmethod
+    def no_haproxy_marathon_bridge():
+        from lib.config import Config
+        return "true" if Config.args().no_haproxy_marathon_bridge == True else "false"
 
     ##
     ## ADDITIONAL OPERATIONS:

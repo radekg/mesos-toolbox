@@ -75,15 +75,18 @@ def op_build():
 
         LOG.info("Marathon version from SBT: {}".format( marathon_sbt_version ))
 
-        # TODO: Actual build
-        build_command = "docker run -ti -v {}:/output -v {}:/marathon-src -v {}:/root/.ivy2 -e \"BUILD_MARATHON_VERSION={}\" -e \"FPM_OUTPUT_VERSION={}\" -e \"ASSEMBLY_WITH_TESTS={}\" {} /bin/bash -c 'cd /marathon-build && ./marathon-build.sh; exit $?'".format(
-                                    os.path.dirname(packages_dir),
-                                    build_dir,
-                                    MarathonConfig.ivy2_dir(),
-                                    MarathonConfig.marathon_version(),
-                                    marathon_sbt_version,
-                                    MarathonConfig.with_tests(),
-                                    image_name )
+        docker_command = list()
+        docker_command.append("docker run -ti ")
+        docker_command.append("-v {}:/output ".format( os.path.dirname(packages_dir) ))
+        docker_command.append("-v {}:/marathon-src ".format( build_dir ))
+        docker_command.append("-v {}:/root/.ivy2 ".format( MarathonConfig.ivy2_dir() ))
+        docker_command.append("-e \"BUILD_MARATHON_VERSION={}\" ".format( MarathonConfig.marathon_version() ))
+        docker_command.append("-e \"FPM_OUTPUT_VERSION={}\" ".format( marathon_sbt_version ))
+        docker_command.append("-e \"ASSEMBLY_WITH_TESTS={}\" ".format( MarathonConfig.with_tests() ))
+        docker_command.append("-e \"INCLUDE_HAPROXY_MARATHON_BRIDGE={}\" ".format( MarathonConfig.no_haproxy_marathon_bridge() ))
+        docker_command.append("{} ".format( image_name ))
+        docker_command.append("/bin/bash -c 'cd /marathon-build && ./marathon-build.sh; exit $?'")
+        build_command = "".join( docker_command )
         
         Utils.cmd("echo '{}'".format(build_command.replace("'", "\\'")))
         LOG.info("Building Marathon {}. This will take a while...".format(MarathonConfig.marathon_version()))
