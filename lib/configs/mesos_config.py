@@ -46,7 +46,7 @@ class MesosConfig(object):
                                 dest="deb_packaging_sha",
                                 help="mesos-deb-packaging sha to use.",
                                 metavar="MESOS_DEB_PACKAGING_SHA",
-                                default=Utils.env_with_default("MESOS_DEB_PACKAGING_SHA", "50fa9d1ed11edc7f4c78c79e4a06bdafe46ad397") )
+                                default=Utils.env_with_default("MESOS_DEB_PACKAGING_SHA", "6c1318af40c10756f803b4d70ac75fee921af452") )
         Config.add_argument( "--mesos-git-repository",
                                 dest="mesos_git_repository",
                                 help="Mesos git repository to use.",
@@ -69,6 +69,13 @@ class MesosConfig(object):
                                 help="mesos-deb-packaging patches directory.",
                                 metavar="PACKAGES_PATCHES_DIR",
                                 default=Utils.env_with_default("PACKAGES_PATCHES_DIR", "{}/patches/mesos-packaging".format(
+                                    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+                                )))
+        Config.add_argument( "--mesos-patches",
+                                dest="mesos_patches_dir",
+                                help="mesos patches directory.",
+                                metavar="MESOS_PATCHES_DIR",
+                                default=Utils.env_with_default("MESOS_PATCHES_DIR", "{}/patches/mesos".format(
                                     os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
                                 )))
         Config.add_argument( "--source-dir",
@@ -138,6 +145,11 @@ class MesosConfig(object):
     def packages_patches_dir():
         from lib.config import Config
         return Config.args().packages_patches_dir
+
+    @staticmethod
+    def mesos_patches_dir():
+        from lib.config import Config
+        return Config.args().mesos_patches_dir
 
     @staticmethod
     def source_dir():

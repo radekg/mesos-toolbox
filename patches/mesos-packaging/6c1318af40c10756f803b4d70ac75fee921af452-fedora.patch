@@ -1,0 +1,13 @@
+diff --git a/build_mesos b/build_mesos
+index a7c82fa..bf607a5 100755
+--- a/build_mesos
++++ b/build_mesos
+@@ -260,7 +260,7 @@ function create_lib_symlinks {(
+     msg "expects libmesos.so to exist in /usr/local/lib)."
+     mkdir -p usr/local/lib
+     # ensure symlinks are relative so they work as expected in the final env
+-    ( cd usr/local/lib && cp -s ../../lib/lib*.so . )
++    ( cd usr/local/lib && cp ../../lib64/lib*.so ../../lib/ && cp -s ../../lib/lib*.so . )
+   fi
+ )}
+ 
