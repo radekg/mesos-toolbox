@@ -14,10 +14,12 @@ This program uses Docker via command line and it works perfectly fine with Docke
 ## * Supported target operating systems
 
 - `Centos 7.1`
+- `Centos 7.2`
 - `Debian Jessie`
 - `Fedora 21`
 - `Fedora 22`
 - `Fedora 23`
+- `Fedora 24`
 - `Ubuntu Precise`
 - `Ubuntu Trusty`
 - `Ubuntu Xenial`
