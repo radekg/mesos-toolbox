@@ -72,6 +72,7 @@ def build_with_docker(build_dir_mesos, build_dir_packaging, packages_dir):
 
     Utils.cmd("echo '{}'".format(mesos_build_command.replace("'", "\\'")))
     LOG.info("Building Mesos {} for {}. This will take a while...".format(MesosConfig.mesos_version(), MesosConfig.operating_system()))
+    LOG.info("Docker command: {}".format(mesos_build_command))
     build_start_time = int(time.time())
     build_status = Utils.cmd(mesos_build_command)
     build_end_time = int(time.time())
@@ -147,6 +148,86 @@ def op_docker_image():
     # TODO: implement
     return False
 
+def apply_packaging_patches(build_dir_packaging):
+    ## LOOKUP order:
+    #   - <sha>-<mesos-version>-<os-family>-<os-version>
+    #   - <sha>-<mesos-version>-<os-family>
+    #   - <sha>-<os-family>-<os-version>
+    #   - <sha>-<os-family>
+    #   - <sha>
+    patch_files = [
+        "{}/{}-{}-{}.patch".format(
+                            MesosConfig.packages_patches_dir(),
+                            MesosConfig.deb_packaging_sha(),
+                            MesosConfig.mesos_version(),
+                            MesosConfig.operating_system().replace(":", "-") ),
+        "{}/{}-{}-{}.patch".format(
+                            MesosConfig.packages_patches_dir(),
+                            MesosConfig.deb_packaging_sha(),
+                            MesosConfig.mesos_version(),
+                            MesosConfig.operating_system().split(":")[0] ),
+        "{}/{}-{}.patch".format(
+                            MesosConfig.packages_patches_dir(),
+                            MesosConfig.deb_packaging_sha(),
+                            MesosConfig.operating_system().replace(":", "-") ),
+        "{}/{}-{}.patch".format(
+                            MesosConfig.packages_patches_dir(),
+                            MesosConfig.deb_packaging_sha(),
+                            MesosConfig.operating_system().split(":")[0] ),
+        "{}/{}.patch".format(
+                            MesosConfig.packages_patches_dir(),
+                            MesosConfig.deb_packaging_sha() ) ]
+    patch_file_to_use = None
+    for patch_file in patch_files:
+        if os.path.isfile(patch_file):
+            patch_file_to_use = patch_file
+            break
+    if patch_file_to_use != None:
+        LOG.info("Found a patch file {} for mesos-deb-packaging. Applying...".format( patch_file_to_use ))
+        result = Utils.cmd("cd {} && git apply {}".format(build_dir_packaging, patch_file_to_use))
+        if result['ExitCode'] != 0:
+            Utils.print_result_error(LOG, "Patch could not be applied to {}.".format( build_dir_packaging ), result)
+            exit(105)
+        else:
+            LOG.info("Patch applied.")
+    else:
+        LOG.info("No patches for mesos-deb-packaging {}.".format( MesosConfig.deb_packaging_sha() ))
+
+def apply_mesos_patches(build_dir_mesos):
+    ## LOOKUP order:
+    #   - <mesos-version>-<os-family>-<os-version>
+    #   - <mesos-version>-<os-family>
+    #   - <mesos-version>
+    patch_files = [
+        "{}/{}-{}.patch".format(
+                            MesosConfig.mesos_patches_dir(),
+                            MesosConfig.mesos_version(),
+                            MesosConfig.operating_system().replace(":", "-") ),
+        "{}/{}-{}.patch".format(
+                            MesosConfig.mesos_patches_dir(),
+                            MesosConfig.mesos_version(),
+                            MesosConfig.operating_system().split(":")[0] ),
+        "{}/{}.patch".format(
+                            MesosConfig.mesos_patches_dir(),
+                            MesosConfig.mesos_version() ) ]
+
+    patch_file_to_use = None
+    for patch_file in patch_files:
+        if os.path.isfile(patch_file):
+            patch_file_to_use = patch_file
+            break
+
+    if patch_file_to_use != None:
+        LOG.info("Found a patch file {} for mesos. Applying...".format( patch_file_to_use ))
+        result = Utils.cmd("cd {} && git apply {}".format(build_dir_mesos, patch_file_to_use))
+        if result['ExitCode'] != 0:
+            Utils.print_result_error(LOG, "Patch could not be applied to {}.".format( build_dir_mesos ), result)
+            exit(105)
+        else:
+            LOG.info("Patch applied.")
+    else:
+        LOG.info("No patches for mesos {}.".format( MesosConfig.deb_packaging_sha() ))
+
 def op_build():
 
     if Utils.ensure_sources(LOG, MesosConfig.mesos_repository_dir(), MesosConfig.mesos_git_repository()) and ensure_deb_packaging():
@@ -162,35 +243,6 @@ def op_build():
         packages_dir        = "{}/{}-{}".format( MesosConfig.packages_dir(),
                                         MesosConfig.mesos_version(),
                                         MesosConfig.operating_system().replace(":", "-") )
-
-        ## LOOKUP order:
-        #   - <sha>-<mesos-version>-<os-family>-<os-version>
-        #   - <sha>-<mesos-version>-<os-family>
-        #   - <sha>-<os-family>-<os-version>
-        #   - <sha>-<os-family>
-        #   - <sha>
-        patch_files = [
-            "{}/{}-{}-{}.patch".format(
-                                MesosConfig.packages_patches_dir(),
-                                MesosConfig.deb_packaging_sha(),
-                                MesosConfig.mesos_version(),
-                                MesosConfig.operating_system().replace(":", "-") ),
-            "{}/{}-{}-{}.patch".format(
-                                MesosConfig.packages_patches_dir(),
-                                MesosConfig.deb_packaging_sha(),
-                                MesosConfig.mesos_version(),
-                                MesosConfig.operating_system().split(":")[0] ),
-            "{}/{}-{}.patch".format(
-                                MesosConfig.packages_patches_dir(),
-                                MesosConfig.deb_packaging_sha(),
-                                MesosConfig.operating_system().replace(":", "-") ),
-            "{}/{}-{}.patch".format(
-                                MesosConfig.packages_patches_dir(),
-                                MesosConfig.deb_packaging_sha(),
-                                MesosConfig.operating_system().split(":")[0] ),
-            "{}/{}.patch".format(
-                                MesosConfig.packages_patches_dir(),
-                                MesosConfig.deb_packaging_sha() ) ]
 
         if os.path.exists(packages_dir):
             if not Utils.confirm("Mesos build for {} {} already exists. To rebuild, continue.".format(
@@ -212,22 +264,7 @@ def op_build():
         Utils.cmd("cp -R {} {}".format( MesosConfig.mesos_repository_dir(), build_dir_mesos ))
         Utils.cmd("cp -R {} {}".format( MesosConfig.deb_packaging_repository_dir(), build_dir_packaging ))
 
-        patch_file_to_use = None
-        for patch_file in patch_files:
-            if os.path.isfile(patch_file):
-                patch_file_to_use = patch_file
-                break
-
-        if patch_file_to_use != None:
-            LOG.info("Found a patch file {} for mesos-deb-packaging. Applying...".format( patch_file_to_use ))
-            result = Utils.cmd("cd {} && git apply {}".format(build_dir_packaging, patch_file_to_use))
-            if result['ExitCode'] != 0:
-                Utils.print_result_error(LOG, "Patch could not be applied to {}.".format( build_dir_packaging ), result)
-                exit(105)
-            else:
-                LOG.info("Patch applied.")
-        else:
-            LOG.info("No patches for mesos-deb-packaging {}.".format( MesosConfig.deb_packaging_sha() ))
+        apply_packaging_patches(build_dir_packaging)
 
         # ensure branch / tag
         Utils.exit_if_git_release_not_set( LOG,
@@ -235,6 +272,8 @@ def op_build():
                                            MesosConfig.mesos_version(),
                                            MesosConfig.mesos_master_branch(),
                                            MesosConfig.mesos_git_repository() )
+
+        apply_mesos_patches(build_dir_mesos)
 
         # We have the right sources now:
         if MesosConfig.operating_system() == "osx":
