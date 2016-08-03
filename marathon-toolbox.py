@@ -87,8 +87,7 @@ def op_build():
         docker_command.append("{} ".format( image_name ))
         docker_command.append("/bin/bash -c 'cd /marathon-build && ./marathon-build.sh; exit $?'")
         build_command = "".join( docker_command )
-        
-        Utils.cmd("echo '{}'".format(build_command.replace("'", "\\'")))
+        LOG.info("Docker command: {}".format(build_command))
         LOG.info("Building Marathon {}. This will take a while...".format(MarathonConfig.marathon_version()))
         build_start_time = int(time.time())
         build_status = Utils.cmd(build_command)

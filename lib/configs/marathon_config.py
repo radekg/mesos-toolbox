@@ -75,7 +75,7 @@ class MarathonConfig(object):
         Config.add_argument( "--no-haproxy-marathon-bridge",
                                 dest="no_haproxy_marathon_bridge",
                                 help="Do not package haproxy-marathon-bridge when packaging Marathon.",
-                                action="store_false" )
+                                action="store_true" )
 
         return Config.ready(program)
 

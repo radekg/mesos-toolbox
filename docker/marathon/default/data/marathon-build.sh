@@ -3,9 +3,9 @@
 set -e
 
 BUILD_DIR=/marathon-src
-PACKAGING_DIR=/tmp/marathon-packaging
+PACKAGING_DIR=/tmp/fpm-packaging
 ASSEMBLY_WITH_TESTS=${ASSEMBLY_WITH_TESTS-false}
-INCLUDE_HAPROXY_MARATHON_BRIDGE=${INCLUDE_HAPROXY_MARATHON_BRIDGE-true}
+INCLUDE_HAPROXY_MARATHON_BRIDGE=${INCLUDE_HAPROXY_MARATHON_BRIDGE-false}
 
 echo "Creating build directory..."
 
@@ -45,6 +45,7 @@ echo "[MARATHON BUILD]: Preparing RPM package..."
 fpm -s dir -t rpm -n ${BUILD_MARATHON_PACKAGE_NAME} -v ${FPM_OUTPUT_VERSION} -C ${PACKAGING_DIR}
 
 echo "[MARATHON BUILD]: Build ready..."
+
 mkdir -p /output/${BUILD_MARATHON_VERSION}
-mv ${BUILD_DIR}/*.rpm /output/${BUILD_MARATHON_VERSION}
-mv ${BUILD_DIR}/*.deb /output/${BUILD_MARATHON_VERSION}
+mv *.rpm /output/${BUILD_MARATHON_VERSION}
+mv *.deb /output/${BUILD_MARATHON_VERSION}
