@@ -89,6 +89,7 @@ def op_build():
         build_command = "".join( docker_command )
         LOG.info("Docker command: {}".format(build_command))
         LOG.info("Building Marathon {}. This will take a while...".format(MarathonConfig.marathon_version()))
+        LOG.info("You can monitor the build with: tail -F {}".format(build_log_file))
         build_start_time = int(time.time())
         build_status = Utils.cmd(build_command)
         build_end_time = int(time.time())
