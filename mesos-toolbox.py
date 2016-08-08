@@ -69,10 +69,10 @@ def build_with_docker(build_dir_mesos, build_dir_packaging, packages_dir):
                                   build_dir_mesos,
                                   image_name,
                                   MesosConfig.mesos_build_version() )
-
-    Utils.cmd("echo '{}'".format(mesos_build_command.replace("'", "\\'")))
-    LOG.info("Building Mesos {} for {}. This will take a while...".format(MesosConfig.mesos_version(), MesosConfig.operating_system()))
+    
     LOG.info("Docker command: {}".format(mesos_build_command))
+    LOG.info("Building Mesos {} for {}. This will take a while...".format(MesosConfig.mesos_version(), MesosConfig.operating_system()))
+
     build_start_time = int(time.time())
     build_status = Utils.cmd(mesos_build_command)
     build_end_time = int(time.time())

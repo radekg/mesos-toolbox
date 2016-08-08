@@ -32,6 +32,7 @@ General documentation: [wiki](https://github.com/radekg/mesos-toolbox/wiki).
 
 Documentation for specific tools:
 
+- [chronos-toolbox.py](https://github.com/radekg/mesos-toolbox/wiki/chronos-toolbox.py)
 - [marathon-toolbox.py](https://github.com/radekg/mesos-toolbox/wiki/marathon-toolbox.py)
 - [mesos-toolbox.py](https://github.com/radekg/mesos-toolbox/wiki/mesos-toolbox.py)
 
