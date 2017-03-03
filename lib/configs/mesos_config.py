@@ -46,7 +46,7 @@ class MesosConfig(object):
                                 dest="deb_packaging_sha",
                                 help="mesos-deb-packaging sha to use.",
                                 metavar="MESOS_DEB_PACKAGING_SHA",
-                                default=Utils.env_with_default("MESOS_DEB_PACKAGING_SHA", "6c1318af40c10756f803b4d70ac75fee921af452") )
+                                default=Utils.env_with_default("MESOS_DEB_PACKAGING_SHA", "41157b81ac6c523987695ac58416bc2b975552f2") )
         Config.add_argument( "--mesos-git-repository",
                                 dest="mesos_git_repository",
                                 help="Mesos git repository to use.",
