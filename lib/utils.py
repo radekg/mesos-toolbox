@@ -11,21 +11,38 @@ class UtilsMeta(type):
 class Utils(object):
     __metaclass__ = UtilsMeta
 
+    processes = dict()
+
+    @staticmethod
+    def has_processes_running():
+        return len(Utils.processes) > 0
+
+    @staticmethod
+    def stop_processes():
+        import signal
+        for k, v in Utils.processes.iteritems():
+            print("telling {} to sigint...".format(k))
+            v.send_signal(signal.SIGINT)
+
     @staticmethod
     def env_with_default(varname, default):
         return os.getenv(varname, default)
 
     @staticmethod
-    def cmd(command):
+    def cmd(command, print_immediately=False):
         from config import Config
         log     = None if Config.cmd_log() == None else open(Config.cmd_log(), 'a', 0)
         output  = list()
         process = Popen(args=command, stdout=PIPE, stderr=PIPE, shell=True)
+        Utils.processes[command] = process
         for line in process.stdout:
             if log != None:
                 log.write(line)
+            if print_immediately:
+                print(line.rstrip())
             output.append(line)
         process.wait()
+        del Utils.processes[command]
         if log != None: log.close()
         return { 'ExitCode': process.returncode, 'StdOut': "".join(output), 'StdErr': process.stderr.read() }
 
@@ -215,6 +232,11 @@ class Utils(object):
             return "1.8." in result['StdOut']
         else:
             return False
+
+    @staticmethod
+    def is_vagrant_available():
+        result = Utils.cmd("which vagrant")
+        return result['ExitCode'] == 0
 
     ##
     ## DOCKER OPERATIONS:

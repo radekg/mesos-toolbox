@@ -1,5 +1,6 @@
 import hashlib, os, sys, time
 from lib.utils import Utils
+from lib.configs.defaults import Defaults
 
 class MesosConfigMeta(type):
     _instances = {}
@@ -82,12 +83,12 @@ class MesosConfig(object):
                                 dest="source_dir",
                                 help="Directory in which the Mesos sources are stored.",
                                 metavar="SOURCE_DIR",
-                                default=Utils.env_with_default("SOURCE_DIR", os.path.expanduser("~/.mesos-toolbox/mesos/sources") ) )
+                                default=Utils.env_with_default("SOURCE_DIR", Defaults.mesos_sources_dir() ) )
         Config.add_argument( "--packages-dir",
                                 dest="packages_dir",
                                 help="Directory in which packaged versions of Mesos are stored.",
                                 metavar="PACKAGES_DIR",
-                                default=Utils.env_with_default("PACKAGES_DIR", os.path.expanduser("~/.mesos-toolbox/mesos/packages") ) )
+                                default=Utils.env_with_default("PACKAGES_DIR", Defaults.mesos_packages_dir() ) )
         Config.add_argument( "--work-dir",
                                 dest="work_dir",
                                 help="Directory in which this program does the work.",

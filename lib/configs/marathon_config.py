@@ -1,5 +1,6 @@
 import hashlib, os, sys, time
 from lib.utils import Utils
+from lib.configs.defaults import Defaults
 
 class MarathonConfigMeta(type):
     _instances = {}
@@ -52,12 +53,12 @@ class MarathonConfig(object):
                                 dest="source_dir",
                                 help="Directory in which the Marathon sources are stored.",
                                 metavar="SOURCE_DIR",
-                                default=Utils.env_with_default("SOURCE_DIR", os.path.expanduser("~/.mesos-toolbox/marathon/sources") ) )
+                                default=Utils.env_with_default("SOURCE_DIR", Defaults.marathon_sources_dir() ) )
         Config.add_argument( "--packages-dir",
                                 dest="packages_dir",
                                 help="Directory in which packaged versions of Mesos are stored.",
                                 metavar="PACKAGES_DIR",
-                                default=Utils.env_with_default("PACKAGES_DIR", os.path.expanduser("~/.mesos-toolbox/marathon/packages") ) )
+                                default=Utils.env_with_default("PACKAGES_DIR", Defaults.marathon_packages_dir() ) )
         Config.add_argument( "--work-dir",
                                 dest="work_dir",
                                 help="Directory in which this program does the work.",
