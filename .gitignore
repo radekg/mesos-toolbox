@@ -1,2 +1,5 @@
 *.pyc
 .DS_Store
+/vagrant/.vagrant
+/vagrant/*.log
+/vagrant/provision/vars-file
