@@ -26,8 +26,9 @@ def vagrant_command(cmd):
     command = "cd {}/vagrant && vagrant {}".format(base, cmd)
     if VagrantConfig.machine() != "":
         command = "{} {}".format(command, VagrantConfig.machine())
-    command = "{} 2>&1".format(command)
-    status = Utils.cmd(command, True)
+    result = Utils.cmd(command, True)
+    if result['ExitCode'] != 0:
+        Utils.print_result_error(LOG, "Vagrant command execution has failed.", result)
 
 ## ----------------------------------------------------------------------------------------------
 ## OPERATIONS:
