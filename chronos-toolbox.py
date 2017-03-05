@@ -37,6 +37,7 @@ def op_build():
         if os.path.exists(packages_dir):
             if not Utils.confirm("Chronos build for {} already exists. To rebuild, continue.".format(
                     ChronosConfig.chronos_version() )):
+                LOG.info("You have cancelled the action.")
                 exit(0)
 
         build_log_file = "{}.{}.log".format(build_dir, str(int(time.time())))
@@ -111,12 +112,14 @@ def op_show_releases():
 def op_remove_build():
     validate_input()
     if not Utils.confirm("You are about to remove Chronos build for {}.".format( ChronosConfig.chronos_version() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}/{}".format( ChronosConfig.packages_dir(),
                                      ChronosConfig.chronos_version()))
 
 def op_remove_sources():
     if not Utils.confirm("You are about to remove Chronos sources for {}.".format( ChronosConfig.chronos_git_repository() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}".format( ChronosConfig.chronos_repository_dir() ))
 

@@ -37,6 +37,7 @@ def op_build():
         if os.path.exists(packages_dir):
             if not Utils.confirm("Marathon build for {} already exists. To rebuild, continue.".format(
                     MarathonConfig.marathon_version() )):
+                LOG.info("You have cancelled the action.")
                 exit(0)
 
         build_log_file = "{}.{}.log".format(build_dir, str(int(time.time())))
@@ -113,12 +114,14 @@ def op_show_releases():
 def op_remove_build():
     validate_input()
     if not Utils.confirm("You are about to remove Marathon build for {}.".format( MarathonConfig.marathon_version() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}/{}".format( MarathonConfig.packages_dir(),
                                      MarathonConfig.marathon_version()))
 
 def op_remove_sources():
     if not Utils.confirm("You are about to remove Marathon sources for {}.".format( MarathonConfig.marathon_git_repository() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}".format( MarathonConfig.marathon_repository_dir() ))
 

@@ -115,6 +115,7 @@ def op_remove_build():
     if not Utils.confirm("You are about to remove Mesos build for {} {}.".format(
             MesosConfig.mesos_version(),
             MesosConfig.operating_system() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}/{}-{}".format( MesosConfig.packages_dir(),
                                         MesosConfig.mesos_version(),
@@ -122,11 +123,13 @@ def op_remove_build():
 
 def op_remove_mesos_sources():
     if not Utils.confirm("You are about to remove Mesos sources for {}.".format( MesosConfig.mesos_git_repository() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}".format( MesosConfig.mesos_repository_dir() ))
 
 def op_remove_packaging_sources():
     if not Utils.confirm("You are about to remove mesos-deb-packaging sources for {}.".format( MesosConfig.deb_packaging_repository() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}".format( MesosConfig.deb_packaging_repository_dir() ))
 
@@ -248,6 +251,7 @@ def op_build():
             if not Utils.confirm("Mesos build for {} {} already exists. To rebuild, continue.".format(
                     MesosConfig.mesos_version(),
                     MesosConfig.operating_system() )):
+                LOG.info("You have cancelled the action.")
                 exit(0)
 
         build_log_file = "{}.{}.log".format(build_dir_mesos, str(int(time.time())))
