@@ -29,6 +29,7 @@ log() {
 export SVC_NAME_PREFIX=vagrant-mesos-
 export SVC_NAME_CONSUL=${SVC_NAME_PREFIX}consul
 export SVC_NAME_DOCKER=${SVC_NAME_PREFIX}docker
+export SVC_NAME_MARATHON=${SVC_NAME_PREFIX}marathon
 export SVC_NAME_MESOS_MASTER=${SVC_NAME_PREFIX}mesos-master
 export SVC_NAME_MESOS_SLAVE=${SVC_NAME_PREFIX}mesos-slave
 export SVC_NAME_MESOS_MASTER_ZK=${SVC_NAME_PREFIX}mesos-master-zk
@@ -65,6 +66,17 @@ export CONSUL_PORT_RPC=${CONSUL_PORT_HTTP-8400}
 export CONSUL_PORT_HTTP=${CONSUL_PORT_HTTP-8500}
 export CONSUL_PORT_HTTPS=${CONSUL_PORT_HTTPS-44300}
 export CONSUL_PORT_DNS=${CONSUL_PORT_DNS-8600}
+
+##
+## MARATHON DEFAULTS
+##
+
+# Env variables starting with MARATHON_ are automagically picked up by Marathon
+export MTHON_CONFIG_DIR=${MTHON_CONFIG_DIR-"/etc/marathon"}
+export MTHON_CONFIG_FILE=${MTHON_CONFIG_FILE-"marathon.conf"}
+export MTHON_PORT=${MTHON_PORT-8080}
+export MTHON_IS_HA=${MTHON_IS_HA-true}
+export MTHON_ZK_PATH=${MTHON_ZK_PATH-"/marathon"}
 
 ##
 ## MESOS DEFAULTS

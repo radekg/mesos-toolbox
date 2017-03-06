@@ -28,4 +28,5 @@ install_packages autoconf \
   ruby-dev \
   zlib1g \
   zlib1g-dev \
-  zlibc
+  zlibc \
+  jq
