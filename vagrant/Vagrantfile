@@ -82,11 +82,13 @@ Vagrant.configure("2") do |config|
     machine.vm.provision :shell, :inline => "echo export CONSUL_IS_SERVER=true >> #{vars_file}"
     machine.vm.provision :shell, :inline => "echo export IPV4_PRIVATE=#{master_ip} >> #{vars_file}"
     machine.vm.provision :shell, :inline => "echo export IPV4_PUBLIC=#{master_ip} >> #{vars_file}"
+    machine.vm.provision :shell, :inline => "echo export MESOS_NODE_TYPE=master >> #{vars_file}"
     machine.vm.provision :shell, :inline => "echo export MESOS_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
     machine.vm.provision :shell, :inline => "echo export MARATHON_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
     machine.vm.provision :shell, :inline => "#{provision_dir}/setup-consul.sh"
     machine.vm.provision :shell, :inline => "#{provision_dir}/setup-docker.sh"
     machine.vm.provision :shell, :inline => "#{provision_dir}/setup-zookeeper.sh"
+    machine.vm.provision :shell, :inline => "#{provision_dir}/setup-mesos-master.sh"
     machine.vm.network "private_network", ip: master_ip
     machine.vm.provider "virtualbox" do |vbox|
       vbox.customize ["modifyvm", :id, "--memory", master_ram.to_s]
@@ -103,10 +105,12 @@ Vagrant.configure("2") do |config|
     machine.vm.provision :shell, :inline => "echo export CONSUL_PRIMARY_SERVER=#{master_ip} >> #{vars_file}"
     machine.vm.provision :shell, :inline => "echo export IPV4_PRIVATE=#{agent1_ip} >> #{vars_file}"
     machine.vm.provision :shell, :inline => "echo export IPV4_PUBLIC=#{agent1_ip} >> #{vars_file}"
+    machine.vm.provision :shell, :inline => "echo export MESOS_NODE_TYPE=slave >> #{vars_file}"
     machine.vm.provision :shell, :inline => "echo export MESOS_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
     machine.vm.provision :shell, :inline => "#{provision_dir}/setup-consul.sh"
     machine.vm.provision :shell, :inline => "#{provision_dir}/setup-docker.sh"
     machine.vm.provision :shell, :inline => "#{provision_dir}/setup-zookeeper.sh"
+    machine.vm.provision :shell, :inline => "#{provision_dir}/setup-mesos-agent.sh"
     machine.vm.network "private_network", ip: agent1_ip
     machine.vm.provider "virtualbox" do |vbox|
       vbox.customize ["modifyvm", :id, "--memory", agent_ram.to_s]
@@ -123,10 +127,12 @@ Vagrant.configure("2") do |config|
     machine.vm.provision :shell, :inline => "echo export CONSUL_PRIMARY_SERVER=#{master_ip} >> #{vars_file}"
     machine.vm.provision :shell, :inline => "echo export IPV4_PRIVATE=#{agent2_ip} >> #{vars_file}"
     machine.vm.provision :shell, :inline => "echo export IPV4_PUBLIC=#{agent2_ip} >> #{vars_file}"
+    machine.vm.provision :shell, :inline => "echo export MESOS_NODE_TYPE=slave >> #{vars_file}"
     machine.vm.provision :shell, :inline => "echo export MESOS_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
     machine.vm.provision :shell, :inline => "#{provision_dir}/setup-consul.sh"
     machine.vm.provision :shell, :inline => "#{provision_dir}/setup-docker.sh"
     machine.vm.provision :shell, :inline => "#{provision_dir}/setup-zookeeper.sh"
+    machine.vm.provision :shell, :inline => "#{provision_dir}/setup-mesos-agent.sh"
     machine.vm.network "private_network", ip: agent2_ip
     machine.vm.provider "virtualbox" do |vbox|
       vbox.customize ["modifyvm", :id, "--memory", agent_ram.to_s]

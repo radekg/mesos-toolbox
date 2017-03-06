@@ -29,6 +29,9 @@ log() {
 export SVC_NAME_PREFIX=vagrant-mesos-
 export SVC_NAME_CONSUL=${SVC_NAME_PREFIX}consul
 export SVC_NAME_DOCKER=${SVC_NAME_PREFIX}docker
+export SVC_NAME_MESOS_MASTER=${SVC_NAME_PREFIX}mesos-master
+export SVC_NAME_MESOS_SLAVE=${SVC_NAME_PREFIX}mesos-slave
+export SVC_NAME_MESOS_MASTER_ZK=${SVC_NAME_PREFIX}mesos-master-zk
 export SVC_NAME_ZOOKEEPER=${SVC_NAME_PREFIX}zookeeper
 
 ##
@@ -62,6 +65,20 @@ export CONSUL_PORT_RPC=${CONSUL_PORT_HTTP-8400}
 export CONSUL_PORT_HTTP=${CONSUL_PORT_HTTP-8500}
 export CONSUL_PORT_HTTPS=${CONSUL_PORT_HTTPS-44300}
 export CONSUL_PORT_DNS=${CONSUL_PORT_DNS-8600}
+
+##
+## MESOS DEFAULTS
+##
+
+export MESOS_NODE_TYPE=${MESOS_NODE_TYPE-""}
+export MESOS_MASTER_PORT=${MESOS_MASTER_PORT-5050}
+export MESOS_SLAVE_PORT=${MESOS_SLAVE_PORT-5051}
+export MESOS_LOG_DIR=${MESOS_LOG_DIR-"/var/log/mesos"}
+export MESOS_MASTER_WORK_DIR=${MESOS_MASTER_WORK_DIR-"/var/lib/mesos-master/workplace"}
+export MESOS_SLAVE_WORK_DIR=${MESOS_SLAVE_WORK_DIR-"/var/lib/mesos-slave/workplace"}
+export MESOS_ZK_PATH=${MESOS_ZK_PATH-"/mesos"}
+export MESOS_JAVA_NATIVE_LIBRARY=${MESOS_JAVA_NATIVE_LIBRARY-/usr/lib/libmesos.so}
+export MESOS_LOG_DIR=${MESOS_LOG_DIR-/var/log/mesos}
 
 ##
 ## ZOOKEPER DEFAULTS
@@ -278,6 +295,13 @@ EOF
   set -u
 }
 
+function disable_service() {
+  set +u
+  log "[Service] Disabling service $1.service"
+  sudo systemctl disable $1.service
+  set -u
+}
+
 function enable_service() {
   if [ -f /etc/systemd/system/$1.service ]; then
     log "[Service] Enabling service $1.service"
@@ -330,6 +354,15 @@ function install_packages() {
   fi
   if [ -n "$(which apt)" ]; then
     sudo apt-get install -y $@
+  fi
+}
+
+function install_package_from_file() {
+  if [ -n "$(which rpm)" ]; then
+    sudo rpm -i --replacefiles $1
+  fi
+  if [ -n "$(which dpkg)" ]; then
+    sudo dpkg -i $1
   fi
 }
 
@@ -502,5 +535,10 @@ function install_zookeeper() {
 function reload_consul() {
   log "[Consul]: Reloading Consul..."
   sudo systemctl reload ${SVC_NAME_CONSUL}
+}
+
+function fail_with_message() {
+  log "[Error]: $1"
+  exit 1
 }
 
