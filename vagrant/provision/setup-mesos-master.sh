@@ -26,6 +26,7 @@ create_consul_watch watch_name="watch-zookeeper-for-${SVC_NAME_MESOS_MASTER}-ser
                     watch_type=service \
                     watch_service=${SVC_NAME_ZOOKEEPER} \
                     watch_handler="${base}/consul/mesos-setup-watch.py"
+reload_consul
 
 log "[$APP_LOG_NAME]: Done."
 log "[$APP_LOG_NAME]: The service will be started by mesos-setup-watch.py."
