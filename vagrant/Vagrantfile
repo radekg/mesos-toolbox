@@ -78,6 +78,8 @@ Vagrant.configure("2") do |config|
     raise "At least one Master is required."
   end
 
+  required_consensus_servers = expected_consensus_servers
+
   master_ips.split(',').each do |ip_address|
     first_master_ip = ip_address if first_master_ip.nil?
     hostname = "mesos-master#{master_index}"
@@ -87,6 +89,7 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :file, source: marathon_build, destination: marathon_package_target_location
       machine.vm.provision :shell, :inline => "chmod +x #{provision_dir}/init.sh && #{provision_dir}/init.sh"
       machine.vm.provision :shell, :inline => "echo export SERVER_INDEX=0 > #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export EXPECTED_CONSENSUS_SERVERS=#{expected_consensus_servers} > #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_DATACENTER=#{datacenter} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_NODE_NAME=#{hostname} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_PRIMARY_SERVER=#{first_master_ip} >> #{vars_file}"
@@ -99,9 +102,9 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :shell, :inline => "echo export MARATHON_PACKAGE_LOCATION=#{marathon_package_target_location} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-consul.sh"
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-docker.sh"
-      if expected_consensus_servers > 0
+      if required_consensus_servers > 0
         machine.vm.provision :shell, :inline => "#{provision_dir}/setup-zookeeper.sh"
-        expected_consensus_servers = expected_consensus_servers - 1
+        required_consensus_servers = required_consensus_servers - 1
       end
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-mesos-master.sh"
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-marathon.sh"
@@ -122,6 +125,7 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :file, source: mesos_build, destination: mesos_package_target_location
       machine.vm.provision :shell, :inline => "chmod +x #{provision_dir}/init.sh && #{provision_dir}/init.sh"
       machine.vm.provision :shell, :inline => "echo export SERVER_INDEX=1 > #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export EXPECTED_CONSENSUS_SERVERS=#{expected_consensus_servers} > #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_DATACENTER=#{datacenter} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_NODE_NAME=#{hostname} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_PRIMARY_SERVER=#{first_master_ip} >> #{vars_file}"
@@ -132,9 +136,9 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :shell, :inline => "echo export MESOS_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-consul.sh"
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-docker.sh"
-      if expected_consensus_servers > 0
+      if required_consensus_servers > 0
         machine.vm.provision :shell, :inline => "#{provision_dir}/setup-zookeeper.sh"
-        expected_consensus_servers = expected_consensus_servers - 1
+        required_consensus_servers = required_consensus_servers - 1
       end
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-mesos-agent.sh"
       machine.vm.hostname = hostname
