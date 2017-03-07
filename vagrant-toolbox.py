@@ -55,6 +55,7 @@ def vagrant_command(cmd):
 
     command = "cd {}/vagrant".format(base)
     exports = get_exports_from_config()
+    first_master_ip = exports['MASTER_IPS'].split(',')[0]
     for key, value in exports.iteritems():
         command = "{}; export {}={}".format(command, key, value)
     command = "{}; vagrant {}".format(command, cmd)
@@ -63,6 +64,12 @@ def vagrant_command(cmd):
     result = Utils.cmd(command, True)
     if result['ExitCode'] != 0:
         Utils.print_result_error(LOG, "Vagrant command execution has failed.", result)
+    else:
+        if cmd == "up":
+            LOG.info("You cluster is up and running \\o/.")
+            LOG.info("- to access the Mesos UI, point your browser to: http://{}:5050".format(first_master_ip))
+            LOG.info("- to access the Consul UI, point your browser to: http://{}:8500".format(first_master_ip))
+            LOG.info("- to access the Marathon UI, point your browser to: http://{}:8080".format(first_master_ip))
 
 ## ----------------------------------------------------------------------------------------------
 ## OPERATIONS:
