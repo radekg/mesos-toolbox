@@ -91,7 +91,7 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :file, source: marathon_build, destination: marathon_package_target_location
       machine.vm.provision :shell, :inline => "chmod +x #{provision_dir}/init.sh && #{provision_dir}/init.sh"
       machine.vm.provision :shell, :inline => "echo export SERVER_INDEX=#{server_index} > #{vars_file}"
-      machine.vm.provision :shell, :inline => "echo export EXPECTED_CONSENSUS_SERVERS=#{expected_consensus_servers} > #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export EXPECTED_CONSENSUS_SERVERS=#{expected_consensus_servers} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_DATACENTER=#{datacenter} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_NODE_NAME=#{hostname} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_PRIMARY_SERVER=#{first_master_ip} >> #{vars_file}"
@@ -128,7 +128,7 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :file, source: mesos_build, destination: mesos_package_target_location
       machine.vm.provision :shell, :inline => "chmod +x #{provision_dir}/init.sh && #{provision_dir}/init.sh"
       machine.vm.provision :shell, :inline => "echo export SERVER_INDEX=#{server_index} > #{vars_file}"
-      machine.vm.provision :shell, :inline => "echo export EXPECTED_CONSENSUS_SERVERS=#{expected_consensus_servers} > #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export EXPECTED_CONSENSUS_SERVERS=#{expected_consensus_servers} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_DATACENTER=#{datacenter} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_NODE_NAME=#{hostname} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_PRIMARY_SERVER=#{first_master_ip} >> #{vars_file}"
