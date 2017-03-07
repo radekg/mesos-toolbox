@@ -86,8 +86,16 @@ def build_with_docker(build_dir_mesos, build_dir_packaging, packages_dir):
                     MesosConfig.operating_system(),
                     str( build_end_time - build_start_time ),
                     packages_dir ))
-        Utils.cmd("rm -rf {}".format(build_dir_mesos))
-        Utils.cmd("rm -rf {}".format(build_dir_packaging))
+        
+        cleanup_command = "rm -rf {}".format(build_dir_mesos)
+        result = Utils.cmd(cleanup_command)
+        if result['ExitCode'] != 0:
+            LOG.error("Failed to cleanup Mesos build temporary directory. Consider exectuing: sudo {}".format(cleanup_command))
+
+        cleanup_command = "rm -rf {}".format(build_dir_packaging)
+        result = Utils.cmd(cleanup_command)
+        if result['ExitCode'] != 0:
+            LOG.error("Failed to cleanup Mesos deb packaging temporary directory. Consider exectuing: sudo {}".format(cleanup_command))
     else:
         LOG.error( "Mesos build failed. Leaving build log and temp directories for inspection. mesos={}; packaging={}".format( build_dir_mesos, build_dir_packaging ) )
         exit(107)
@@ -115,6 +123,7 @@ def op_remove_build():
     if not Utils.confirm("You are about to remove Mesos build for {} {}.".format(
             MesosConfig.mesos_version(),
             MesosConfig.operating_system() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}/{}-{}".format( MesosConfig.packages_dir(),
                                         MesosConfig.mesos_version(),
@@ -122,11 +131,13 @@ def op_remove_build():
 
 def op_remove_mesos_sources():
     if not Utils.confirm("You are about to remove Mesos sources for {}.".format( MesosConfig.mesos_git_repository() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}".format( MesosConfig.mesos_repository_dir() ))
 
 def op_remove_packaging_sources():
     if not Utils.confirm("You are about to remove mesos-deb-packaging sources for {}.".format( MesosConfig.deb_packaging_repository() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}".format( MesosConfig.deb_packaging_repository_dir() ))
 
@@ -230,8 +241,8 @@ def apply_mesos_patches(build_dir_mesos):
 
 def op_build():
 
+    validate_input()
     if Utils.ensure_sources(LOG, MesosConfig.mesos_repository_dir(), MesosConfig.mesos_git_repository()) and ensure_deb_packaging():
-        validate_input()
 
         # create temp work dir:
         build_dir_mesos    = "{}/{}-{}".format( MesosConfig.work_dir(),
@@ -248,6 +259,7 @@ def op_build():
             if not Utils.confirm("Mesos build for {} {} already exists. To rebuild, continue.".format(
                     MesosConfig.mesos_version(),
                     MesosConfig.operating_system() )):
+                LOG.info("You have cancelled the action.")
                 exit(0)
 
         build_log_file = "{}.{}.log".format(build_dir_mesos, str(int(time.time())))
@@ -286,7 +298,7 @@ if __name__ == "__main__":
     if "build" == MesosConfig.command(): op_build()
     if "docker" == MesosConfig.command(): op_docker_image()
     if "show-releases" == MesosConfig.command(): op_show_releases()
-    if "show-builds" == MesosConfig.command(): Utils.list_builds( LOG, MesosConfig.packages_dir() )
+    if "show-builds" == MesosConfig.command(): Utils.print_builds( LOG, MesosConfig.packages_dir() )
     if "remove-build" == MesosConfig.command(): op_remove_build()
     if "show-mesos-sources" == MesosConfig.command(): Utils.list_sources(MesosConfig.source_dir(), 'mesos')
     if "show-packaging-sources" == MesosConfig.command(): Utils.list_sources(MesosConfig.source_dir(), 'mesos-packaging')

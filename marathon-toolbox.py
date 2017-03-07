@@ -19,8 +19,8 @@ def list_releases():
     return Utils.list_releases(LOG, MarathonConfig.marathon_repository_dir(), MarathonConfig.marathon_master_branch())
 
 def op_build():
+    validate_input()
     if Utils.ensure_sources(LOG, MarathonConfig.marathon_repository_dir(), MarathonConfig.marathon_git_repository()):
-        validate_input()
         image_name = "marathon-docker-build"
         if not Utils.is_docker_image(LOG, image_name):
             LOG.info("Docker image not found. Building...")
@@ -37,6 +37,7 @@ def op_build():
         if os.path.exists(packages_dir):
             if not Utils.confirm("Marathon build for {} already exists. To rebuild, continue.".format(
                     MarathonConfig.marathon_version() )):
+                LOG.info("You have cancelled the action.")
                 exit(0)
 
         build_log_file = "{}.{}.log".format(build_dir, str(int(time.time())))
@@ -113,12 +114,14 @@ def op_show_releases():
 def op_remove_build():
     validate_input()
     if not Utils.confirm("You are about to remove Marathon build for {}.".format( MarathonConfig.marathon_version() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}/{}".format( MarathonConfig.packages_dir(),
                                      MarathonConfig.marathon_version()))
 
 def op_remove_sources():
     if not Utils.confirm("You are about to remove Marathon sources for {}.".format( MarathonConfig.marathon_git_repository() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}".format( MarathonConfig.marathon_repository_dir() ))
 
@@ -131,7 +134,7 @@ if __name__ == "__main__":
 
     if "build" == MarathonConfig.command(): op_build()
     if "show-releases" == MarathonConfig.command(): op_show_releases()
-    if "show-builds" == MarathonConfig.command(): Utils.list_builds( LOG, MarathonConfig.packages_dir() )
+    if "show-builds" == MarathonConfig.command(): Utils.print_builds( LOG, MarathonConfig.packages_dir() )
     if "remove-build" == MarathonConfig.command(): op_remove_build()
     if "show-sources" == MarathonConfig.command(): Utils.list_sources(MarathonConfig.source_dir(), 'marathon')
     if "remove-sources" == MarathonConfig.command(): op_remove_sources()

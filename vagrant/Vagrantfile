@@ -1,0 +1,153 @@
+Vagrant.configure("2") do |config|
+
+  debian_family = ['ubuntu', 'debian']
+  rhel_family = ['centos','fedora','redhat']
+
+  def map_os_to_box(target_os)
+    if target_os.start_with?("centos:7")
+      ["viniciusfs/centos7", "https://atlas.hashicorp.com/viniciusfs/boxes/centos7/"]
+    elsif target_os == "ubuntu:precise"
+      ["precise", "https://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-amd64-vagrant-disk1.box"]
+    elsif target_os == "ubuntu:trusty"
+      ["trusty", "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"]
+    elsif target_os == "ubuntu:xenial"
+      ["xenial", "https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-vagrant.box"]
+    elsif target_os.start_with?('fedora:2')
+      raise "No suitable Vagrant image: #{target_os}."
+    elsif target_os == "debian:jessie"
+      ["ARTACK/debian-jessie", "https://atlas.hashicorp.com/ARTACK/boxes/debian-jessie"]
+    else
+      raise "Unsupported OS: #{target_os}."
+    end
+  end
+
+  vars_file = "~/vars"
+  provision_dir = "/vagrant/provision"
+
+  default_mesos_version = "1.1.0"
+  default_marathon_version = "1.4.1"
+  expected_consensus_servers = 3
+
+  datacenter = ENV['DEPLOYMENT_NAME'] || 'vagrant'
+  master_ips = ENV['MASTER_IPS'] || '192.168.33.100'
+  agent_ips = ENV['AGENT_IPS'] || '192.168.33.101,192.168.33.102'
+  master_ram = ENV['MASTER_MEMORY'] || 1024
+  agent_ram = ENV['AGENT_MEMORY'] || 2048
+
+  target_os = ENV['TARGET_OS'] || 'ubuntu:xenial'
+  mesos_version = ENV['MESOS_VERSION'] || default_mesos_version
+  marathon_version = ENV['MARATHON_VERSION'] || default_marathon_version
+
+  os, version = target_os.split(':')
+
+  mesos_build_dir = ENV['MESOS_BUILD_DIR'] || "~/.mesos-toolbox/mesos/packages/mesos/#{mesos_version}-#{os}-#{version}"
+  marathon_build_dir = ENV['MARATHON_BUILD_DIR'] || "~/.mesos-toolbox/marathon/packages/v#{marathon_version}"
+
+  package_extension = ''
+  if debian_family.include?(os)
+    package_extension = 'deb'
+  elsif rhel_family.include?(os)
+    package_extension = 'rpm'
+  else
+    raise "Unsupported OS: #{os}."
+  end
+
+  marathon_package_name = ''
+  if debian_family.include?(os)
+    marathon_package_name = "marathon_#{marathon_version}_amd64.#{package_extension}"
+  elsif rhel_family.include?(os)
+    marathon_package_name = "marathon-#{marathon_version}.x86_64.#{package_extension}"
+  else
+    raise "Unsupported OS: #{os}."
+  end
+
+  mesos_package_target_location = "/tmp/mesos.#{package_extension}"
+  marathon_package_target_location = "/tmp/marathon.#{package_extension}"
+  mesos_build = "#{mesos_build_dir}/pkg.#{package_extension}"
+  marathon_build = "#{marathon_build_dir}/#{marathon_package_name}"
+
+  box, url = map_os_to_box(target_os)
+
+  config.vm.box = box
+  config.vm.box_url = url
+
+  master_index = 1
+  first_master_ip = nil
+
+  if master_ips.split(',').length == 0
+    raise "At least one Master is required."
+  end
+
+  required_consensus_servers = expected_consensus_servers
+
+  master_ips.split(',').each do |ip_address|
+    first_master_ip = ip_address if first_master_ip.nil?
+    hostname = "mesos-master#{master_index}"
+    config.vm.define hostname do |machine|
+      machine.vm.provision :shell, :inline => "echo export VARS_FILE=#{vars_file} > #{provision_dir}/vars-file"
+      machine.vm.provision :file, source: mesos_build, destination: mesos_package_target_location
+      machine.vm.provision :file, source: marathon_build, destination: marathon_package_target_location
+      machine.vm.provision :shell, :inline => "chmod +x #{provision_dir}/init.sh && #{provision_dir}/init.sh"
+      machine.vm.provision :shell, :inline => "echo export SERVER_INDEX=0 > #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export EXPECTED_CONSENSUS_SERVERS=#{expected_consensus_servers} > #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export CONSUL_DATACENTER=#{datacenter} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export CONSUL_NODE_NAME=#{hostname} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export CONSUL_PRIMARY_SERVER=#{first_master_ip} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export CONSUL_IS_SERVER=true >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export IPV4_PRIVATE=#{ip_address} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export IPV4_PUBLIC=#{ip_address} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export MESOS_NODE_TYPE=master >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export MESOS_HOSTNAME=#{hostname} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export MESOS_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export MARATHON_PACKAGE_LOCATION=#{marathon_package_target_location} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-consul.sh"
+      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-docker.sh"
+      if required_consensus_servers > 0
+        machine.vm.provision :shell, :inline => "#{provision_dir}/setup-zookeeper.sh"
+        required_consensus_servers = required_consensus_servers - 1
+      end
+      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-mesos-master.sh"
+      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-marathon.sh"
+      machine.vm.hostname = hostname
+      machine.vm.network "private_network", ip: ip_address
+      machine.vm.provider "virtualbox" do |vbox|
+        vbox.customize ["modifyvm", :id, "--memory", master_ram.to_s]
+      end
+    end
+    master_index = master_index + 1
+  end
+
+  agent_index = 1
+  agent_ips.split(',').each do |ip_address|
+    hostname = "mesos-agent#{agent_index}"
+    config.vm.define hostname do |machine|
+      machine.vm.provision :shell, :inline => "echo export VARS_FILE=#{vars_file} > #{provision_dir}/vars-file"
+      machine.vm.provision :file, source: mesos_build, destination: mesos_package_target_location
+      machine.vm.provision :shell, :inline => "chmod +x #{provision_dir}/init.sh && #{provision_dir}/init.sh"
+      machine.vm.provision :shell, :inline => "echo export SERVER_INDEX=1 > #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export EXPECTED_CONSENSUS_SERVERS=#{expected_consensus_servers} > #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export CONSUL_DATACENTER=#{datacenter} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export CONSUL_NODE_NAME=#{hostname} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export CONSUL_PRIMARY_SERVER=#{first_master_ip} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export IPV4_PRIVATE=#{ip_address} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export IPV4_PUBLIC=#{ip_address} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export MESOS_NODE_TYPE=slave >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export MESOS_HOSTNAME=#{hostname} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export MESOS_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
+      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-consul.sh"
+      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-docker.sh"
+      if required_consensus_servers > 0
+        machine.vm.provision :shell, :inline => "#{provision_dir}/setup-zookeeper.sh"
+        required_consensus_servers = required_consensus_servers - 1
+      end
+      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-mesos-agent.sh"
+      machine.vm.hostname = hostname
+      machine.vm.network "private_network", ip: ip_address
+      machine.vm.provider "virtualbox" do |vbox|
+        vbox.customize ["modifyvm", :id, "--memory", agent_ram.to_s]
+      end
+    end
+    agent_index = agent_index + 1
+  end
+
+end

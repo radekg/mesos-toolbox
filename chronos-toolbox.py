@@ -19,8 +19,8 @@ def list_releases():
     return Utils.list_releases(LOG, ChronosConfig.chronos_repository_dir(), ChronosConfig.chronos_master_branch())
 
 def op_build():
+    validate_input()
     if Utils.ensure_sources(LOG, ChronosConfig.chronos_repository_dir(), ChronosConfig.chronos_git_repository()):
-        validate_input()
         image_name = "chronos-docker-build"
         if not Utils.is_docker_image(LOG, image_name):
             LOG.info("Docker image not found. Building...")
@@ -37,6 +37,7 @@ def op_build():
         if os.path.exists(packages_dir):
             if not Utils.confirm("Chronos build for {} already exists. To rebuild, continue.".format(
                     ChronosConfig.chronos_version() )):
+                LOG.info("You have cancelled the action.")
                 exit(0)
 
         build_log_file = "{}.{}.log".format(build_dir, str(int(time.time())))
@@ -111,12 +112,14 @@ def op_show_releases():
 def op_remove_build():
     validate_input()
     if not Utils.confirm("You are about to remove Chronos build for {}.".format( ChronosConfig.chronos_version() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}/{}".format( ChronosConfig.packages_dir(),
                                      ChronosConfig.chronos_version()))
 
 def op_remove_sources():
     if not Utils.confirm("You are about to remove Chronos sources for {}.".format( ChronosConfig.chronos_git_repository() )):
+        LOG.info("You have cancelled the action.")
         exit(0)
     Utils.cmd("rm -rf {}".format( ChronosConfig.chronos_repository_dir() ))
 
@@ -129,7 +132,7 @@ if __name__ == "__main__":
 
     if "build" == ChronosConfig.command(): op_build()
     if "show-releases" == ChronosConfig.command(): op_show_releases()
-    if "show-builds" == ChronosConfig.command(): Utils.list_builds( LOG, ChronosConfig.packages_dir() )
+    if "show-builds" == ChronosConfig.command(): Utils.print_builds( LOG, ChronosConfig.packages_dir() )
     if "remove-build" == ChronosConfig.command(): op_remove_build()
     if "show-sources" == ChronosConfig.command(): Utils.list_sources(ChronosConfig.source_dir(), 'chronos')
     if "remove-sources" == ChronosConfig.command(): op_remove_sources()
