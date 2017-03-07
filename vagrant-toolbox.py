@@ -46,8 +46,6 @@ def get_exports_from_config():
                                                          VagrantConfig.operating_system().replace(":", "-"))
     exports['MARATHON_BUILD_DIR'] = "{}/{}".format(VagrantConfig.marathon_packages_dir(),
                                                    VagrantConfig.marathon_build())
-    print(str(exports))
-    exit(100)
     return exports
 
 def vagrant_command(cmd):
