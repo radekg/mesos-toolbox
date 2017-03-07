@@ -136,9 +136,9 @@ class VagrantConfig(object):
         return Config.args().deployment_name
 
     @staticmethod
-    def master_ip():
+    def master_ips():
         from lib.config import Config
-        return Config.args().master_ip
+        return Config.args().master_ips
 
     @staticmethod
     def agent_ips():
