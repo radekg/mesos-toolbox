@@ -68,12 +68,12 @@ class VagrantConfig(object):
                                 dest="master_ips",
                                 help="Master IP addresses. Comma delimited list of addresses to give to masters.",
                                 metavar="MASTER_IP",
-                                default=Utils.env_with_default("MASTER_IP","192.16.33.100") )
+                                default=Utils.env_with_default("MASTER_IP","192.168.33.100") )
         Config.add_argument( "--agent-ips",
                                 dest="agent_ips",
                                 help="Agent IP addresses. Comma delimited list of addresses to give to agents.",
                                 metavar="AGENT_IPS",
-                                default=Utils.env_with_default("AGENT_IPS","192.16.33.101,192.16.33.102") )
+                                default=Utils.env_with_default("AGENT_IPS","192.168.33.101,192.168.33.102") )
         Config.add_argument( "--master-memory",
                                 dest="master_memory",
                                 help="Master RAM amount.",
