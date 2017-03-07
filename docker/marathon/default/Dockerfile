@@ -1,4 +1,4 @@
-FROM centos:7.1.1503
+FROM centos:7.3.1611
 
 ADD data /marathon-build
 
