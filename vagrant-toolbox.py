@@ -19,11 +19,34 @@ def signal_handler(signal, frame):
     if Utils.has_processes_running():
         Utils.stop_processes()
 
+def get_exports_from_config():
+    exports = dict()
+    exports['DEPLOYMENT_NAME'] = VagrantConfig.deployment_name()
+    exports['MASTER_IP'] = VagrantConfig.master_ip()
+    agent_ips = VagrantConfig.agent_ips().split(",")
+    idx = 1
+    for agent_ip in agent_ips:
+        exports["AGENT{}_IP".format(idx)] = agent_ip
+        idx = idx + 1
+    exports['MASTER_MEMORY'] = VagrantConfig.master_memory()
+    exports['AGENT_MEMORY'] = VagrantConfig.agent_memory()
+    exports['TARGET_OS'] = VagrantConfig.operating_system()
+    exports['MESOS_VERSION'] = VagrantConfig.mesos_build()
+    exports['MARATHON_VERSION'] = VagrantConfig.marathon_build().replace("v", "", 1)
+    # TODO: exports['MESOS_BUILD_DIR']
+    # TODO: exports['MARATHON_BUILD_DIR']
+    return exports
+
 def vagrant_command(cmd):
     validate_input()
     signal.signal(signal.SIGINT, signal_handler)
     base = os.path.dirname(os.path.abspath(__file__))
-    command = "cd {}/vagrant && vagrant {}".format(base, cmd)
+
+    command = "cd {}/vagrant".format(base)
+    exports = get_exports_from_config()
+    for key, value in exports.iteritems():
+        command = "{}; export {}={}".format(command, key, value)
+    command = "{}; vagrant {}".format(command, cmd)
     if VagrantConfig.machine() != "":
         command = "{} {}".format(command, VagrantConfig.machine())
     result = Utils.cmd(command, True)

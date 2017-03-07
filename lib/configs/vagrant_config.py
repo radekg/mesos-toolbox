@@ -52,6 +52,31 @@ class VagrantConfig(object):
                                 help="Optional machine for the Vagrant command.",
                                 metavar="MACHINE",
                                 default=Utils.env_with_default("MACHINE","") )
+        Config.add_argument( "--deployment-name",
+                                dest="deployment_name",
+                                help="Deployment name.",
+                                metavar="DEPLOYMENT_NAME",
+                                default=Utils.env_with_default("DEPLOYMENT_NAME","vagrant") )
+        Config.add_argument( "--master-ip",
+                                dest="master_ip",
+                                help="Master IP address.",
+                                metavar="MASTER_IP",
+                                default=Utils.env_with_default("MASTER_IP","192.16.33.100") )
+        Config.add_argument( "--agent-ips",
+                                dest="agent_ips",
+                                help="Agent IP addresses. Comma delimited list of addresses to give to agents.",
+                                metavar="AGENT_IPS",
+                                default=Utils.env_with_default("AGENT_IPS","192.16.33.101,192.16.33.102") )
+        Config.add_argument( "--master-memory",
+                                dest="master_memory",
+                                help="Master RAM amount.",
+                                metavar="MASTER_MEMORY",
+                                default=Utils.env_with_default("MASTER_MEMORY","1024") )
+        Config.add_argument( "--agent-memory",
+                                dest="agent_memory",
+                                help="Agent RAM amount.",
+                                metavar="AGENT_MEMORY",
+                                default=Utils.env_with_default("AGENT_MEMORY","2048") )
         return Config.ready(program)
 
     @staticmethod
@@ -92,3 +117,28 @@ class VagrantConfig(object):
     def machine():
         from lib.config import Config
         return Config.args().machine
+
+    @staticmethod
+    def deployment_name():
+        from lib.config import Config
+        return Config.args().deployment_name
+
+    @staticmethod
+    def master_ip():
+        from lib.config import Config
+        return Config.args().master_ip
+
+    @staticmethod
+    def agent_ips():
+        from lib.config import Config
+        return Config.args().agent_ips
+
+    @staticmethod
+    def master_memory():
+        from lib.config import Config
+        return Config.args().master_memory
+
+    @staticmethod
+    def agent_memory():
+        from lib.config import Config
+        return Config.args().agent_memory

@@ -35,11 +35,12 @@ Vagrant.configure("2") do |config|
   agent_ram = ENV['AGENT_MEMORY'] || 2048
 
   target_os = ENV['TARGET_OS'] || 'ubuntu:xenial'
+  mesos_version = ENV['MESOS_VERSION'] || default_mesos_version
   marathon_version = ENV['MARATHON_VERSION'] || default_marathon_version
 
   os, version = target_os.split(':')
 
-  mesos_build_dir = ENV['MESOS_BUILD_DIR'] || "~/.mesos-toolbox/mesos/packages/mesos/#{default_mesos_version}-#{os}-#{version}"
+  mesos_build_dir = ENV['MESOS_BUILD_DIR'] || "~/.mesos-toolbox/mesos/packages/mesos/#{mesos_version}-#{os}-#{version}"
   marathon_build_dir = ENV['MARATHON_BUILD_DIR'] || "~/.mesos-toolbox/marathon/packages/v#{marathon_version}"
 
   package_extension = ''
