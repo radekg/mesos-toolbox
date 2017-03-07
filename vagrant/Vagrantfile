@@ -61,7 +61,7 @@ Vagrant.configure("2") do |config|
   if debian_family.include?(os)
     marathon_package_name = "marathon_#{marathon_version}_amd64.#{package_extension}"
   elsif rhel_family.include?(os)
-    marathon_package_name = "marathon-#{marathon_version}.x86_64.#{package_extension}"
+    marathon_package_name = "marathon-#{marathon_version}-1.x86_64.#{package_extension}"
   else
     raise "Unsupported OS: #{os}."
   end
