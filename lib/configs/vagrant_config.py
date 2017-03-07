@@ -47,6 +47,13 @@ class VagrantConfig(object):
                                 help="Operating system to build mesos for.",
                                 metavar="OPERATING_SYSTEM",
                                 default=Utils.env_with_default("OPERATING_SYSTEM","") )
+        Config.add_argument( "--docker-templates",
+                                dest="docker_templates_dir",
+                                help="Docker templates base directory.",
+                                metavar="DOCKER_TEMPLATES_DIR",
+                                default=Utils.env_with_default("DOCKER_TEMPLATES_DIR", "{}/docker/mesos".format(
+                                    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+                                )))
         Config.add_argument( "--machine",
                                 dest="machine",
                                 help="Optional machine for the Vagrant command.",
@@ -114,6 +121,11 @@ class VagrantConfig(object):
         return Config.args().operating_system
 
     @staticmethod
+    def docker_templates_dir():
+        from lib.config import Config
+        return Config.args().docker_templates_dir
+
+    @staticmethod
     def machine():
         from lib.config import Config
         return Config.args().machine
@@ -142,3 +154,8 @@ class VagrantConfig(object):
     def agent_memory():
         from lib.config import Config
         return Config.args().agent_memory
+
+    @staticmethod
+    def supported_operating_systems():
+        from lib.config import Config
+        return Utils.list_supported_operating_systems(Config.args().docker_templates_dir)

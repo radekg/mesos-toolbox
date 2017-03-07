@@ -94,6 +94,7 @@ def build_with_docker(build_dir_mesos, build_dir_packaging, packages_dir):
 
         cleanup_command = "rm -rf {}".format(build_dir_packaging)
         result = Utils.cmd(cleanup_command)
+        if result['ExitCode'] != 0:
             LOG.error("Failed to cleanup Mesos deb packaging temporary directory. Consider exectuing: sudo {}".format(cleanup_command))
     else:
         LOG.error( "Mesos build failed. Leaving build log and temp directories for inspection. mesos={}; packaging={}".format( build_dir_mesos, build_dir_packaging ) )

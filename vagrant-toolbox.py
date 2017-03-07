@@ -10,6 +10,13 @@ def validate_input():
     mesos_build = VagrantConfig.mesos_build()
     marathon_build = VagrantConfig.marathon_build()
     operating_system = VagrantConfig.operating_system()
+
+    if operating_system not in VagrantConfig.supported_operating_systems():
+        Utils.exit_with_cmd_error( __file__,
+                                   "Operating system ({}) is not supported. Available values: {}".format(
+                                    operating_system,
+                                    str(VagrantConfig.supported_operating_systems()) ))
+    
     if mesos_build == "":
         Utils.exit_with_cmd_error( __file__, "Mesos build version not given. Run mesos-toolbox show-builds to see what the available builds are.")
     if marathon_build == "":
@@ -19,6 +26,7 @@ def validate_input():
         Utils.exit_with_cmd_error( __file__, "Mesos build {} does not exist. Please build that version first with mesos-toolbox.".format(mesos_build_name))
     if VagrantConfig.marathon_build() not in Utils.list_builds(VagrantConfig.marathon_packages_dir()):
         Utils.exit_with_cmd_error( __file__, "Marathon build {} does not exist. Please build that version first with mesos-toolbox.".format(VagrantConfig.marathon_build()))
+    exit(100)
 
 def signal_handler(signal, frame):
     if Utils.has_processes_running():

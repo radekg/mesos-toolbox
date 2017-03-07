@@ -204,4 +204,5 @@ class MesosConfig(object):
     @staticmethod
     def supported_operating_systems():
         from lib.config import Config
-        return [ name for name in os.listdir( Config.args().docker_templates_dir ) ] + ( ["osx"] if sys.platform == "darwin" else [] )
+        return Utils.list_supported_operating_systems(Config.args().docker_templates_dir)
+        

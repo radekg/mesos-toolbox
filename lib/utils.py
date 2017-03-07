@@ -109,6 +109,10 @@ class Utils(object):
                             data['remote "origin"']['url'],
                             full_path )
 
+    @staticmethod
+    def list_supported_operating_systems(directory):
+        return [ name for name in os.listdir( directory ) ] + ( ["osx"] if sys.platform == "darwin" else [] )
+
     ##
     ## GIT RELATED OPERATIONS:
     ##
