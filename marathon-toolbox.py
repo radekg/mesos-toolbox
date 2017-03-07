@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
     if "build" == MarathonConfig.command(): op_build()
     if "show-releases" == MarathonConfig.command(): op_show_releases()
-    if "show-builds" == MarathonConfig.command(): Utils.list_builds( LOG, MarathonConfig.packages_dir() )
+    if "show-builds" == MarathonConfig.command(): Utils.print_builds( LOG, MarathonConfig.packages_dir() )
     if "remove-build" == MarathonConfig.command(): op_remove_build()
     if "show-sources" == MarathonConfig.command(): Utils.list_sources(MarathonConfig.source_dir(), 'marathon')
     if "remove-sources" == MarathonConfig.command(): op_remove_sources()

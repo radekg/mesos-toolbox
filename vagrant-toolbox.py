@@ -14,6 +14,11 @@ def validate_input():
         Utils.exit_with_cmd_error( __file__, "Mesos build version not given. Run mesos-toolbox show-builds to see what the available builds are.")
     if marathon_build == "":
         Utils.exit_with_cmd_error( __file__, "Marathon build version not given. Run marathon-toolbox show-builds to see what the available builds are.")
+    mesos_build_name = "{}-{}".format(VagrantConfig.mesos_build(), VagrantConfig.operating_system().replace(":", "-"))
+    if mesos_build_name not in Utils.list_builds("{}/mesos".format(VagrantConfig.mesos_packages_dir())):
+        Utils.exit_with_cmd_error( __file__, "Mesos build {} does not exist. Please build that version first with mesos-toolbox.".format(mesos_build_name))
+    if VagrantConfig.marathon_build() not in Utils.list_builds(VagrantConfig.marathon_packages_dir()):
+        Utils.exit_with_cmd_error( __file__, "Marathon build {} does not exist. Please build that version first with mesos-toolbox.".format(VagrantConfig.marathon_build()))
 
 def signal_handler(signal, frame):
     if Utils.has_processes_running():
@@ -33,8 +38,13 @@ def get_exports_from_config():
     exports['TARGET_OS'] = VagrantConfig.operating_system()
     exports['MESOS_VERSION'] = VagrantConfig.mesos_build()
     exports['MARATHON_VERSION'] = VagrantConfig.marathon_build().replace("v", "", 1)
-    # TODO: exports['MESOS_BUILD_DIR']
-    # TODO: exports['MARATHON_BUILD_DIR']
+    exports['MESOS_BUILD_DIR'] = "{}/mesos/{}-{}".format(VagrantConfig.mesos_packages_dir(),
+                                                         VagrantConfig.mesos_build(),
+                                                         VagrantConfig.operating_system().replace(":", "-"))
+    exports['MARATHON_BUILD_DIR'] = "{}/{}".format(VagrantConfig.marathon_packages_dir(),
+                                                   VagrantConfig.marathon_build())
+    print(str(exports))
+    exit(100)
     return exports
 
 def vagrant_command(cmd):

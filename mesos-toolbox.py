@@ -297,7 +297,7 @@ if __name__ == "__main__":
     if "build" == MesosConfig.command(): op_build()
     if "docker" == MesosConfig.command(): op_docker_image()
     if "show-releases" == MesosConfig.command(): op_show_releases()
-    if "show-builds" == MesosConfig.command(): Utils.list_builds( LOG, MesosConfig.packages_dir() )
+    if "show-builds" == MesosConfig.command(): Utils.print_builds( LOG, MesosConfig.packages_dir() )
     if "remove-build" == MesosConfig.command(): op_remove_build()
     if "show-mesos-sources" == MesosConfig.command(): Utils.list_sources(MesosConfig.source_dir(), 'mesos')
     if "show-packaging-sources" == MesosConfig.command(): Utils.list_sources(MesosConfig.source_dir(), 'mesos-packaging')

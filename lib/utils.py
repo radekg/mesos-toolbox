@@ -74,9 +74,13 @@ class Utils(object):
         return sys.platform
 
     @staticmethod
-    def list_builds(LOG, directory):
-        for name in [ name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name)) ]:
-            print name
+    def list_builds(directory):
+        return [ name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name)) ]
+
+    @staticmethod
+    def print_builds(LOG, directory):
+        for build in Utils.list_builds(directory):
+            print build
 
     @staticmethod
     def list_releases(LOG, repo_dir, master_branch):

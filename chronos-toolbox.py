@@ -132,7 +132,7 @@ if __name__ == "__main__":
 
     if "build" == ChronosConfig.command(): op_build()
     if "show-releases" == ChronosConfig.command(): op_show_releases()
-    if "show-builds" == ChronosConfig.command(): Utils.list_builds( LOG, ChronosConfig.packages_dir() )
+    if "show-builds" == ChronosConfig.command(): Utils.print_builds( LOG, ChronosConfig.packages_dir() )
     if "remove-build" == ChronosConfig.command(): op_remove_build()
     if "show-sources" == ChronosConfig.command(): Utils.list_sources(ChronosConfig.source_dir(), 'chronos')
     if "remove-sources" == ChronosConfig.command(): op_remove_sources()
