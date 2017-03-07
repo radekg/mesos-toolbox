@@ -37,6 +37,8 @@ if len(parsed_input) == int(os.environ['EXPECTED_CONSENSUS_SERVERS']):
 
     config = list()
     if os.environ['MESOS_NODE_TYPE'] == 'master':
+        if os.environ['MESOS_HOSTNAME'] != "":
+            config.append("--hostname={}".format(os.environ['MESOS_HOSTNAME']) )
         config.append("--log_dir={}".format( os.environ['MESOS_LOG_DIR'] ) )
         config.append("--ip={}".format( os.environ['IPV4_PRIVATE'] ) )
         config.append("--port={}".format( os.environ['MESOS_MASTER_PORT'] ) )
@@ -45,6 +47,8 @@ if len(parsed_input) == int(os.environ['EXPECTED_CONSENSUS_SERVERS']):
         config.append("--cluster={}".format( os.environ['CONSUL_DATACENTER'] ) )
         config.append("--registry=in_memory" )
     elif os.environ['MESOS_NODE_TYPE'] == 'slave':
+        if os.environ['MESOS_HOSTNAME'] != "":
+            config.append("--hostname={}".format(os.environ['MESOS_HOSTNAME']) )
         config.append("--log_dir={}".format( os.environ['MESOS_LOG_DIR'] ) )
         config.append("--ip={}".format( os.environ['IPV4_PRIVATE'] ) )
         config.append("--port={}".format( os.environ['MESOS_SLAVE_PORT'] ) )

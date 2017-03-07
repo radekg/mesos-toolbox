@@ -64,9 +64,9 @@ class VagrantConfig(object):
                                 help="Deployment name.",
                                 metavar="DEPLOYMENT_NAME",
                                 default=Utils.env_with_default("DEPLOYMENT_NAME","vagrant") )
-        Config.add_argument( "--master-ip",
-                                dest="master_ip",
-                                help="Master IP address.",
+        Config.add_argument( "--master-ips",
+                                dest="master_ips",
+                                help="Master IP addresses. Comma delimited list of addresses to give to masters.",
                                 metavar="MASTER_IP",
                                 default=Utils.env_with_default("MASTER_IP","192.16.33.100") )
         Config.add_argument( "--agent-ips",

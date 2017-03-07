@@ -35,12 +35,8 @@ def signal_handler(signal, frame):
 def get_exports_from_config():
     exports = dict()
     exports['DEPLOYMENT_NAME'] = VagrantConfig.deployment_name()
-    exports['MASTER_IP'] = VagrantConfig.master_ip()
-    agent_ips = VagrantConfig.agent_ips().split(",")
-    idx = 1
-    for agent_ip in agent_ips:
-        exports["AGENT{}_IP".format(idx)] = agent_ip
-        idx = idx + 1
+    exports['MASTER_IPS'] = VagrantConfig.master_ips()
+    exports['AGENT_IPS'] = VagrantConfig.agent_ips()
     exports['MASTER_MEMORY'] = VagrantConfig.master_memory()
     exports['AGENT_MEMORY'] = VagrantConfig.agent_memory()
     exports['TARGET_OS'] = VagrantConfig.operating_system()
