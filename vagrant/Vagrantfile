@@ -5,17 +5,21 @@ Vagrant.configure("2") do |config|
 
   def map_os_to_box(target_os)
     if target_os.start_with?("centos:7")
-      ["viniciusfs/centos7", "https://atlas.hashicorp.com/viniciusfs/boxes/centos7/"]
+      "centos/7"
     elsif target_os == "ubuntu:precise"
-      ["precise", "https://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-amd64-vagrant-disk1.box"]
+      "ubuntu/precise64"
     elsif target_os == "ubuntu:trusty"
-      ["trusty", "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"]
+      "ubuntu/trusty64"
     elsif target_os == "ubuntu:xenial"
-      ["xenial", "https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-vagrant.box"]
-    elsif target_os.start_with?('fedora:2')
+      "ubuntu/xenial64"
+    elsif ['fedora:21', 'fedora:22'].include?(target_os)
       raise "No suitable Vagrant image: #{target_os}."
+    elsif target_os == "fedora:23"
+      "fedora/23-cloud-base"
+    elsif target_os == "fedora:24"
+      "fedora/24-cloud-base"
     elsif target_os == "debian:jessie"
-      ["ARTACK/debian-jessie", "https://atlas.hashicorp.com/ARTACK/boxes/debian-jessie"]
+      "debian/jessie64"
     else
       raise "Unsupported OS: #{target_os}."
     end
@@ -66,11 +70,8 @@ Vagrant.configure("2") do |config|
   marathon_package_target_location = "/tmp/marathon.#{package_extension}"
   mesos_build = "#{mesos_build_dir}/pkg.#{package_extension}"
   marathon_build = "#{marathon_build_dir}/#{marathon_package_name}"
-
-  box, url = map_os_to_box(target_os)
-
-  config.vm.box = box
-  config.vm.box_url = url
+  
+  config.vm.box = map_os_to_box(target_os)
 
   master_index = 1
   first_master_ip = nil
