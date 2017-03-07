@@ -27,6 +27,7 @@ Vagrant.configure("2") do |config|
   default_mesos_version = "1.1.0"
   default_marathon_version = "1.4.1"
   expected_consensus_servers = 3
+  server_index = 0
 
   datacenter = ENV['DEPLOYMENT_NAME'] || 'vagrant'
   master_ips = ENV['MASTER_IPS'] || '192.168.33.100'
@@ -88,7 +89,7 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :file, source: mesos_build, destination: mesos_package_target_location
       machine.vm.provision :file, source: marathon_build, destination: marathon_package_target_location
       machine.vm.provision :shell, :inline => "chmod +x #{provision_dir}/init.sh && #{provision_dir}/init.sh"
-      machine.vm.provision :shell, :inline => "echo export SERVER_INDEX=0 > #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export SERVER_INDEX=#{server_index} > #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export EXPECTED_CONSENSUS_SERVERS=#{expected_consensus_servers} > #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_DATACENTER=#{datacenter} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_NODE_NAME=#{hostname} >> #{vars_file}"
@@ -115,6 +116,7 @@ Vagrant.configure("2") do |config|
       end
     end
     master_index = master_index + 1
+    server_index = server_index + 1
   end
 
   agent_index = 1
@@ -124,7 +126,7 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :shell, :inline => "echo export VARS_FILE=#{vars_file} > #{provision_dir}/vars-file"
       machine.vm.provision :file, source: mesos_build, destination: mesos_package_target_location
       machine.vm.provision :shell, :inline => "chmod +x #{provision_dir}/init.sh && #{provision_dir}/init.sh"
-      machine.vm.provision :shell, :inline => "echo export SERVER_INDEX=1 > #{vars_file}"
+      machine.vm.provision :shell, :inline => "echo export SERVER_INDEX=#{server_index} > #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export EXPECTED_CONSENSUS_SERVERS=#{expected_consensus_servers} > #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_DATACENTER=#{datacenter} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export CONSUL_NODE_NAME=#{hostname} >> #{vars_file}"
@@ -148,6 +150,7 @@ Vagrant.configure("2") do |config|
       end
     end
     agent_index = agent_index + 1
+    server_index = server_index + 1
   end
 
 end
