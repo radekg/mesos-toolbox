@@ -23,7 +23,7 @@ create_service service_name=${SVC_NAME_CONSUL} \
                service_Description="Consul agent" \
                service_Environment="GOMAXPROCS=2" \
                service_Restart=on-failure \
-               service_ExecStart="/usr/bin/consul agent -config-dir=${CONSUL_CONFIG_DIR}" \
+               service_ExecStart="/usr/bin/consul agent -ui -config-dir=${CONSUL_CONFIG_DIR}" \
                service_ExecReload="/bin/kill -HUP \$MAINPID"
 
 log "[Consul]: Setting up configuration..."
