@@ -26,7 +26,6 @@ def validate_input():
         Utils.exit_with_cmd_error( __file__, "Mesos build {} does not exist. Please build that version first with mesos-toolbox.".format(mesos_build_name))
     if VagrantConfig.marathon_build() not in Utils.list_builds(VagrantConfig.marathon_packages_dir()):
         Utils.exit_with_cmd_error( __file__, "Marathon build {} does not exist. Please build that version first with mesos-toolbox.".format(VagrantConfig.marathon_build()))
-    exit(100)
 
 def signal_handler(signal, frame):
     if Utils.has_processes_running():
