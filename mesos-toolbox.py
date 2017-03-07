@@ -241,8 +241,8 @@ def apply_mesos_patches(build_dir_mesos):
 
 def op_build():
 
+    validate_input()
     if Utils.ensure_sources(LOG, MesosConfig.mesos_repository_dir(), MesosConfig.mesos_git_repository()) and ensure_deb_packaging():
-        validate_input()
 
         # create temp work dir:
         build_dir_mesos    = "{}/{}-{}".format( MesosConfig.work_dir(),

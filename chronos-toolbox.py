@@ -19,8 +19,8 @@ def list_releases():
     return Utils.list_releases(LOG, ChronosConfig.chronos_repository_dir(), ChronosConfig.chronos_master_branch())
 
 def op_build():
+    validate_input()
     if Utils.ensure_sources(LOG, ChronosConfig.chronos_repository_dir(), ChronosConfig.chronos_git_repository()):
-        validate_input()
         image_name = "chronos-docker-build"
         if not Utils.is_docker_image(LOG, image_name):
             LOG.info("Docker image not found. Building...")
