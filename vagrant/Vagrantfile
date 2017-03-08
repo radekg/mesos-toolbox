@@ -104,7 +104,6 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :shell, :inline => "echo export MESOS_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export MARATHON_PACKAGE_LOCATION=#{marathon_package_target_location} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-consul.sh"
-      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-docker.sh"
       if required_consensus_servers > 0
         machine.vm.provision :shell, :inline => "#{provision_dir}/setup-zookeeper.sh"
         required_consensus_servers = required_consensus_servers - 1

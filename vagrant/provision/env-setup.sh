@@ -353,28 +353,28 @@ function start_timer() {
 }
 
 function update_packages() {
-  if [ -n "$(which yum)" ]; then
-    sudo yum install -y update
+  if [ -f /etc/redhat-release ]; then
+    sudo yum update -y
   fi
-  if [ -n "$(which apt)" ]; then
+  if [ -f /etc/lsb-release ]; then
     sudo apt-get update -y
   fi
 }
 
 function install_packages() {
-  if [ -n "$(which yum)" ]; then
+  if [ -f /etc/redhat-release ]; then
     sudo yum install -y $@
   fi
-  if [ -n "$(which apt)" ]; then
+  if [ -f /etc/lsb-release ]; then
     sudo apt-get install -y $@
   fi
 }
 
 function install_package_from_file() {
-  if [ -n "$(which rpm)" ]; then
+  if [ -f /etc/redhat-release ]; then
     sudo rpm -i --replacefiles $1
   fi
-  if [ -n "$(which dpkg)" ]; then
+  if [ -f /etc/lsb-release ]; then
     sudo dpkg -i $1
   fi
 }
