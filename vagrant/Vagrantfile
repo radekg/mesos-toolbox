@@ -104,11 +104,11 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :shell, :inline => "echo export MESOS_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export MARATHON_PACKAGE_LOCATION=#{marathon_package_target_location} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-consul.sh"
+      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-mesos-master.sh"
       if required_consensus_servers > 0
         machine.vm.provision :shell, :inline => "#{provision_dir}/setup-zookeeper.sh"
         required_consensus_servers = required_consensus_servers - 1
       end
-      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-mesos-master.sh"
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-marathon.sh"
       machine.vm.hostname = hostname
       machine.vm.network "private_network", ip: ip_address
@@ -140,11 +140,11 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :shell, :inline => "echo export MESOS_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-consul.sh"
       machine.vm.provision :shell, :inline => "#{provision_dir}/setup-docker.sh"
+      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-mesos-agent.sh"
       if required_consensus_servers > 0
         machine.vm.provision :shell, :inline => "#{provision_dir}/setup-zookeeper.sh"
         required_consensus_servers = required_consensus_servers - 1
       end
-      machine.vm.provision :shell, :inline => "#{provision_dir}/setup-mesos-agent.sh"
       machine.vm.hostname = hostname
       machine.vm.network "private_network", ip: ip_address
       machine.vm.provider "virtualbox" do |vbox|
