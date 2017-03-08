@@ -44,19 +44,7 @@ else
   log "[$APP_LOG_NAME]: Docker $(docker -v) already installed..."
 fi
 
-if [ -f /etc/lsb-release ]; then
-  log "[$APP_LOG_NAME]: Setting up the service..."
-  create_service service_name=${SVC_NAME_DOCKER} \
-                 service_Description=${APP_LOG_NAME} \
-                 service_Restart=on-failure \
-                 service_ExecStart="/usr/bin/docker daemon --storage-driver=overlay -H fd://"
-fi
-if [ -f /etc/redhat-release ]; then
-  log "[$APP_LOG_NAME]: Using Docker provided service definition..."
-  sudo systemctl start docker
-fi
-
-log "[$APP_LOG_NAME]: Enabling the service..."
-enable_service ${SVC_NAME_DOCKER}
+log "[$APP_LOG_NAME]: Using Docker provided service definition..."
+sudo systemctl start docker
 
 log "[$APP_LOG_NAME]: Done."
