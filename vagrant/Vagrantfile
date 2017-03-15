@@ -125,7 +125,8 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :shell, :inline => "echo export IPV4_PRIVATE=#{ip_address} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export IPV4_PUBLIC=#{ip_address} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export MESOS_NODE_TYPE=master >> #{vars_file}"
-      machine.vm.provision :shell, :inline => "echo export MESOS_HOSTNAME=#{hostname} >> #{vars_file}"
+      # on Vagrant, we need to use the IP address as a hostname for mesos:
+      machine.vm.provision :shell, :inline => "echo export MESOS_HOSTNAME=#{ip_address} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export MESOS_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export MARATHON_PACKAGE_LOCATION=#{marathon_package_target_location} >> #{vars_file}"
       machine.vm.provision :file, source: mesos_build, destination: mesos_package_target_location
@@ -156,7 +157,8 @@ Vagrant.configure("2") do |config|
       machine.vm.provision :shell, :inline => "echo export IPV4_PRIVATE=#{ip_address} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export IPV4_PUBLIC=#{ip_address} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export MESOS_NODE_TYPE=slave >> #{vars_file}"
-      machine.vm.provision :shell, :inline => "echo export MESOS_HOSTNAME=#{hostname} >> #{vars_file}"
+      # on Vagrant, we need to use the IP address as a hostname for mesos:
+      machine.vm.provision :shell, :inline => "echo export MESOS_HOSTNAME=#{ip_address} >> #{vars_file}"
       machine.vm.provision :shell, :inline => "echo export MESOS_PACKAGE_LOCATION=#{mesos_package_target_location} >> #{vars_file}"
       machine.vm.provision :file, source: mesos_build, destination: mesos_package_target_location
       machine.vm.provision :shell, :inline => "chmod +x #{provision_dir}/init.sh && #{provision_dir}/init.sh"
