@@ -37,7 +37,7 @@ class Utils(object):
                          stdout=PIPE, stderr=PIPE,
                          shell=True )
         for line in process.stdout:
-            ( key, _, value ) = line.strip().partition("=")
+            ( key, _, value ) = line.decode('utf-8').strip().partition("=")
             os.environ[key] = value
         process.wait()
         if process.returncode != 0:
