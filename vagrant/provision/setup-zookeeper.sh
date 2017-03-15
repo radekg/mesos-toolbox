@@ -14,6 +14,15 @@ SVC_NAME=$SVC_NAME_ZOOKEEPER
 CLIENT_PORT=$ZOOKEEPER_CLIENT_PORT
 ZK_SERVER_ID=$(($SERVER_INDEX + 1))
 
+if [ -f /etc/redhat-release ]; then
+  log "[$APP_LOG_NAME]: Installing CentOS dependencies..."
+  install_packages java-1.8.0-openjdk-devel
+fi
+if [ -f /etc/lsb-release ]; then
+  log "[$APP_LOG_NAME]: Installing Debian dependencies..."
+  install_packages openjdk-8-jdk
+fi
+
 log "[$APP_LOG_NAME]: Downloading ${ZOOKEEPER_VERSION}..."
 install_zookeeper zk_version=${ZOOKEEPER_VERSION} \
                   zk_install_directory=${INSTALL_DIR} \

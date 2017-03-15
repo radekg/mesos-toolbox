@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import json, os, re, select, sys
 from subprocess import PIPE, Popen

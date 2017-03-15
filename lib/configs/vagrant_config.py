@@ -64,16 +64,26 @@ class VagrantConfig(object):
                                 help="Deployment name.",
                                 metavar="DEPLOYMENT_NAME",
                                 default=Utils.env_with_default("DEPLOYMENT_NAME","vagrant") )
+        Config.add_argument( "--consensus-ips",
+                                dest="consensus_ips",
+                                help="Consensus servers IP addresses. Comma delimited list of addresses to give to consensus servers.",
+                                metavar="CONSENSUS_IPS",
+                                default=Utils.env_with_default("CONSENSUS_IPS","192.168.33.99") )
         Config.add_argument( "--master-ips",
                                 dest="master_ips",
                                 help="Master IP addresses. Comma delimited list of addresses to give to masters.",
-                                metavar="MASTER_IP",
-                                default=Utils.env_with_default("MASTER_IP","192.168.33.100") )
+                                metavar="MASTER_IPS",
+                                default=Utils.env_with_default("MASTER_IPS","192.168.33.100") )
         Config.add_argument( "--agent-ips",
                                 dest="agent_ips",
                                 help="Agent IP addresses. Comma delimited list of addresses to give to agents.",
-                                metavar="AGENT_IPS",
+                                metavar="AGENT_IPSS",
                                 default=Utils.env_with_default("AGENT_IPS","192.168.33.101,192.168.33.102") )
+        Config.add_argument( "--consensus-memory",
+                                dest="consensus_memory",
+                                help="Consensus machine RAM amount.",
+                                metavar="CONSENSUS_MEMORY",
+                                default=Utils.env_with_default("CONSENSUS_MEMORY","512") )
         Config.add_argument( "--master-memory",
                                 dest="master_memory",
                                 help="Master RAM amount.",
@@ -136,6 +146,11 @@ class VagrantConfig(object):
         return Config.args().deployment_name
 
     @staticmethod
+    def consensus_ips():
+        from lib.config import Config
+        return Config.args().consensus_ips
+
+    @staticmethod
     def master_ips():
         from lib.config import Config
         return Config.args().master_ips
@@ -144,6 +159,11 @@ class VagrantConfig(object):
     def agent_ips():
         from lib.config import Config
         return Config.args().agent_ips
+
+    @staticmethod
+    def consensus_memory():
+        from lib.config import Config
+        return Config.args().consensus_memory
 
     @staticmethod
     def master_memory():

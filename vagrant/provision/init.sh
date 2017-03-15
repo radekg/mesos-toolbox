@@ -14,3 +14,4 @@ log "[Init]: Installing common dependencies..."
 
 update_packages
 install_packages wget unzip jq
+$base/setup-consul.sh
