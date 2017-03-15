@@ -40,12 +40,17 @@ log "[$APP_LOG_NAME]: Enabling service..."
 
 enable_service ${SVC_NAME_MARATHON}
 
-log "[$APP_LOG_NAME]: Registering Consul watch..."
+log "[$APP_LOG_NAME]: Registering Consul watches..."
 
 create_consul_watch watch_name="watch-zookeeper-for-${SVC_NAME_ZOOKEEPER}-service" \
                     watch_type=service \
                     watch_service=${SVC_NAME_MESOS_MASTER_ZK} \
                     watch_handler="${base}/consul/marathon-setup-watch.py"
+
+create_consul_watch watch_name="watch-${SVC_NAME_MARATHON}-service" \
+                    watch_type=service \
+                    watch_service=${SVC_NAME_MARATHON} \
+                    watch_handler="${base}/consul/marathon-availability-watch.py"
 
 log "[$APP_LOG_NAME]: Reloading Consul..."
 

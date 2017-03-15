@@ -16,7 +16,7 @@ class Utils(object):
         output  = list()
         process = Popen(args=command, stdout=PIPE, stderr=PIPE, shell=True)
         for line in process.stdout:
-            output.append(line)
+            output.append(line.decode('utf-8'))
         process.wait()
         return { 'ExitCode': process.returncode,
                  'Success': (process.returncode == 0),
@@ -89,8 +89,20 @@ class Utils(object):
     @staticmethod
     def reload_consul(LOG):
         LOG.info("Reloading Consul service")
-        result = Utils.cmd("systemctl reload {}".format( os.environ['SVC_NAME_CONSUL'] ))
-        return result
+        return Utils.cmd("systemctl reload {}".format( os.environ['SVC_NAME_CONSUL'] ))
+
+    @staticmethod
+    def consul_service_data(service_name):
+        return Utils.cmd("curl --silent http://{}:{}/v1/catalog/service/{}".format(
+            os.environ['CONSUL_PRIMARY_SERVER'],
+            os.environ['CONSUL_PORT_HTTP'],
+            service_name))
+
+    @staticmethod
+    def deploy_marathon_app(marathon_address, app_definition_str):
+        return Utils.cmd("curl --silent -X POST -H 'Content-Type: application/json' -d '{}' http://{}/v2/apps".format(
+            app_definition_str,
+            marathon_address))
 
     @staticmethod
     def write_text(data, path):
